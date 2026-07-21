@@ -41,3 +41,43 @@ import genToken from "../utils/token.js";
     }
 
 }
+
+
+
+
+
+
+export const signUp= async(req,resp)=>{
+
+    try{
+        const{email,password}=req.body;
+        const  user = await User.findOne({email})
+        if(!user){
+            return resp.status(400).json({message:"User Does not  Exist "})
+        }
+
+        const isMatch=await bcrypt.compare(password,user.password);
+        if(!isMatch){
+            return resp.status(400).json({message:"incorrect password"})
+        }
+        
+     
+
+        const token=await genToken(user._id)
+        resp.cookie("token",token,{
+            secure:false,
+            sameSite:"strict",
+            maxAge:7*24*60*60*1000,
+            httpOnly:true
+        })
+
+        return resp.status(200),json(user)
+    }
+    catch(error){
+        return resp.status(500),json(`sign in  error ${error}`)
+
+    }
+
+}
+
+
