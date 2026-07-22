@@ -47,7 +47,7 @@ import genToken from "../utils/token.js";
 
 
 
-export const signUp= async(req,resp)=>{
+export const signIn= async(req,resp)=>{
 
     try{
         const{email,password}=req.body;
@@ -61,8 +61,8 @@ export const signUp= async(req,resp)=>{
             return resp.status(400).json({message:"incorrect password"})
         }
         
-     
-
+        
+        
         const token=await genToken(user._id)
         resp.cookie("token",token,{
             secure:false,
@@ -70,13 +70,28 @@ export const signUp= async(req,resp)=>{
             maxAge:7*24*60*60*1000,
             httpOnly:true
         })
-
+        
         return resp.status(200),json(user)
     }
     catch(error){
         return resp.status(500),json(`sign in  error ${error}`)
+        
+    }
+    
+}
+
+
+export const signOut=async(req,resp)=>{
+    try{
+        resp.clearCookie("token")
+        
+        return resp.status(200).json({message:"sign out successfully"})
+        
+    }catch{
+        return resp.status(500),json(`sign out  error ${error}`)
 
     }
+
 
 }
 
