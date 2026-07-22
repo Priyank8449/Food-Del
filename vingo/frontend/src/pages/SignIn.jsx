@@ -62,7 +62,7 @@ const SignUp = () => {
                     </div>
                 </div>
 
-                <div className='text-right mb-4 text-red-500' onClick={()=>navigate("/forgot-password")}>
+                <div className='text-right mb-4 text-red-500 cursor-pointer' onClick={()=>navigate("/forgot-password")}>
                     Forgot Password
                 </div>
 

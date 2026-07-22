@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
 import genToken from "../utils/token.js";
+import { sendOtp } from "../utils/mail.js";
 
 
 
@@ -99,6 +100,54 @@ export const signOut=async(req,resp)=>{
     }
 
 
+}
+
+
+
+export const SendOtp=async(req,res)=>{
+    try{
+            const{email}=req.body
+            const  user=await User.findOne({email})
+            if(!user){
+                return res.status(400).json({message:"user does not exist."})
+            }
+            const opt=Math.floor(1000+Math.random()*9000).toString()
+            user.resetOtp=otp
+            user.OtpExpires=Date.now()+5*60*1000
+            user.isOtpVerified=false
+            await user.save()
+            await sendOtp(email,otp)
+
+            return res.status(200).json({message:"otp  sent successfully"})
+        
+        }catch(error){
+            return res.status(500).json(`send otp  error ${error}`)
+
+    }
+
+}
+
+
+export const verifyOtp=async(req,res)=>{
+    try{
+        const{email,otp}=req.body
+
+        const user=await User.findOne({email})
+        if(!user|| user.resetOtp!=otp|| user.OtpExpires<Date.now()){
+            res.status(400).json({message:"invalid or expired otp"})
+        }
+        user.resetOtp=undefined
+        user.isOtpVerified=true;
+        user.OtpExpires=undefined
+        await user.save()
+
+        return res.status(200).json({message:"otp verified successfully"})
+
+    }catch(error){
+        return res.status(500).json(`verify otp  error ${error}`)
+ 
+
+    }
 }
 
 
