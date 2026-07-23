@@ -3,11 +3,14 @@ import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { serverUrl } from '../App';
+
+import axios from 'axios';
 const ForgotPassword = () => {
 
     const [step, setStep] = useState(1)
-    const [email, setEmail] = useState()
-    const [otp, setOtp] = useState()
+    const [email, setEmail] = useState("")
+    const [otp, setOtp] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
@@ -15,6 +18,53 @@ const ForgotPassword = () => {
     
 
     const navigate=useNavigate()
+
+
+    const handleSendOtp=async()=>{
+        console.log("EMAIL:", email);
+
+        try{
+        const  result=await axios.post(`${serverUrl}/api/auth/send-otp`,{email},
+        {withCredentials:true});
+        console.log(result)
+        setStep(2)
+        }
+        
+        catch(error){
+            console.log(error)
+
+        }
+    }
+    const handleVeryfyOtp=async()=>{
+        try{
+        const  result=await axios.post(`${serverUrl}/api/auth/verify-otp`,{email,otp},
+        {withCredentials:true});
+        console.log(result)
+        setStep(3)
+        }
+        
+        catch(error){
+            console.log(error)
+
+        }
+    }
+   const handleResetPassword=async()=>{
+        if(newPassword!=confirmPassword){
+            return null
+        }
+        try{
+        const  result=await axios.post(`${serverUrl}/api/auth/reset-password`,{email,newPassword},
+        {withCredentials:true});
+        console.log(result)
+        navigate("/signin")
+        }
+        
+        catch(error){
+            console.log(error)
+
+        }
+    }
+
 
     return (
         <div className='flex items-center justify-center min-h-screen p-4 w-full bg-[#a67fa4b7]'>
@@ -32,7 +82,7 @@ const ForgotPassword = () => {
                             <label className='block text-gray-800 text-xl font-medium mb-1' htmlFor="email">Email</label>
                             <input onChange={(event) => setEmail(event.target.value)} value={email} className=' text-gray-600 rounded-lg  w-full p-1 border focus:outline-none focus:border-orange-500' type="email" placeholder='enter your email' />
                         </div>
-                        <button onClick={()=>setStep(2)} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
+                        <button onClick={handleSendOtp} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
                     Send OTP
                 </button>
                     </div>
@@ -46,7 +96,7 @@ const ForgotPassword = () => {
                             <label className='block text-gray-800 text-xl font-medium mb-1' htmlFor="OTP">OTP</label>
                             <input onChange={(event) => setOtp(event.target.value)} value={otp} className=' text-gray-600 rounded-lg  w-full p-1 border focus:outline-none focus:border-orange-500' type="text" placeholder='enter OTP' />
                         </div>
-                        <button className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
+                        <button onClick={handleVeryfyOtp} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
                     Verify OTP
                 </button>
                     </div>
@@ -67,7 +117,7 @@ const ForgotPassword = () => {
                                                 <button onClick={() => setShowPassword(prev => !prev)} className='absolute right-3 top-[8px] text-2xl cursor-pointer '>{showPassword ? <FaEyeSlash /> : <FaRegEye />}</button>
                                             </div>
                                         </div>
-                        <button className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
+                        <button onClick={handleResetPassword} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
                     Reset Password
                 </button>
                     </div>
