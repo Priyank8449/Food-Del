@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import signUpBg from "../assets/signup-bg3.avif";
+import signUpBg from "../assets/signup-bg-2.jpg";
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -9,6 +9,7 @@ import { serverUrl } from '../App';
 import { Navigate } from 'react-router-dom';
 import { GoogleAuthProvider, setPersistence, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { ClipLoader } from 'react-spinners';
 
 
 const SignIn = () => {
@@ -23,8 +24,11 @@ const SignIn = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const[error,setError]=useState("")
+        const[loading,setLoading]=useState(false)
+    
 
     const handleSignIn = async () => {
+        setLoading(true)
         try {
             const result = await axios.post(`${serverUrl}/api/auth/signin`, {
                  email, password
@@ -35,6 +39,7 @@ const SignIn = () => {
 
                 console.log(result)
                 setError("")
+                setLoading(false)
 
 
         }catch (error) {
@@ -64,9 +69,9 @@ const SignIn = () => {
     }
 
     return (
-        <div className='min-h-screen w-full flex items-center justify-center p-3 ' style={{ backgroundColor: bgColor, backgroundSize: "cover" }}>
+        <div className='min-h-screen w-full flex items-center justify-center p-3 ' style={{ backgroundSize: "cover",backgroundPosition:"center"}}>
 
-            <div className={`0 rounded-xl  shadow-2xl w-full max-w-md p-4 border backdrop-blur-xl ]`}>
+            <div className={`bg-black/10 rounded-xl  shadow-2xl w-full max-w-md p-4 border backdrop-blur-xl ]`}>
                 <h1 className={`text-3xl font-bold mb-2`} style={{ color: primaryColor }}>Anytime Craving</h1>
                 <p className='text-gray-400 mb-4'>Sign In to your account to  get  started with  delicious food deliveries </p>
 
@@ -93,8 +98,9 @@ const SignIn = () => {
 
 
 
-                <button onClick={handleSignIn} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
-                    Sign In
+                <button onClick={handleSignIn} disabled={loading} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
+                    {loading?<ClipLoader/>:"Sign In"}
+                    
                 </button>
                 <p className='text-red-700 text-center'>{error}</p>
 
