@@ -267,3 +267,149 @@ Frontend Integration
 - dotenv
 - cookie-parser
 - Nodemon
+
+
+
+
+
+# Current User Authentication Flow
+
+The application uses JWT-based authentication with cookies to fetch the currently logged-in user's details.
+
+## Backend Flow
+
+### 1. `isAuth` Middleware
+
+* Collects the JWT token from `req.cookies.token`.
+* Verifies the token using `jwt.verify()` and `JWT_SECRET`.
+* Extracts the `userId` from the decoded token.
+* Stores the `userId` in `req.userId`.
+* Calls `next()` to continue the request lifecycle.
+
+```js
+req.userId = decodedToken.userId;
+next();
+```
+
+---
+
+### 2. `getCurrentUser` Controller
+
+* Receives the `userId` from `req.userId`.
+* Checks whether the `userId` exists.
+* Uses `User.findById(userId)` to fetch the user's details from MongoDB.
+* Returns the user object as a JSON response.
+
+```js
+const user = await User.findById(userId);
+
+return res.status(200).json(user);
+```
+
+---
+
+### 3. User Routes
+
+The `/current` route is protected using the `isAuth` middleware.
+
+```js
+userRouter.get("/current", isAuth, getCurrentUser);
+```
+
+#### Request Flow
+
+```text
+Frontend
+   ↓
+GET /api/user/current
+   ↓
+isAuth Middleware
+   ↓
+Extract Token from Cookie
+   ↓
+Verify JWT
+   ↓
+Get userId
+   ↓
+getCurrentUser Controller
+   ↓
+User.findById(userId)
+   ↓
+Return User Details (JSON)
+```
+
+---
+
+## Frontend Flow
+
+### 1. Custom Hook (`useGetCurrentUser`)
+
+* Executes when the application loads.
+* Sends a GET request to `/api/user/current`.
+* Includes cookies using `withCredentials: true`.
+* Receives the logged-in user's details.
+* Stores or logs the response for further use.
+
+```js
+const result = await axios.get(
+    `${serverUrl}/api/user/current`,
+    {
+        withCredentials: true,
+    }
+);
+```
+
+---
+
+### 2. Hook Usage
+
+The custom hook is called inside `App.jsx`:
+
+```js
+const App = () => {
+    useGetCurrentUser();
+
+    return (
+        <Routes>
+            {/* Routes */}
+        </Routes>
+    );
+};
+```
+
+---
+
+## Complete Flow Diagram
+
+```text
+User Logs In
+     ↓
+JWT Token Generated
+     ↓
+Token Stored in Cookie
+     ↓
+Frontend Calls useGetCurrentUser()
+     ↓
+GET /api/user/current
+     ↓
+isAuth Middleware
+     ↓
+Read Token from Cookie
+     ↓
+Verify Token
+     ↓
+Extract userId
+     ↓
+getCurrentUser Controller
+     ↓
+User.findById(userId)
+     ↓
+Return User Data
+     ↓
+Frontend Receives User Details
+     ↓
+Store/Display User Information
+```
+
+This flow ensures that every authenticated request can securely identify the currently logged-in user and provide their information throughout the application.
+
