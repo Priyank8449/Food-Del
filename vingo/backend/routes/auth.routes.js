@@ -1,5 +1,5 @@
 import express from "express"
-import { resetPassword, signIn, signOut, signUp, verifyOtp, SendOtp, googleAuth} from "../controller/auth.controller.js"
+import { resetPassword, signIn, signOut, signUp, verifyOtp, SendOtp ,googleAuth} from "../controller/auth.controller.js"
 
 const authRouter=express.Router()
 
