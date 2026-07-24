@@ -129,7 +129,7 @@ const SignUp = () => {
                 </div>
 
                 <button onClick={handleSignUp} disabled={loading} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
-                    {loading?<ClipLoaderc size={20}/>:"Sign Up"}
+                    {loading?<ClipLoader size={20}/>:"Sign Up"}
                     
                 </button>
                 <p className='text-red-700 text-center'>{error}</p>
