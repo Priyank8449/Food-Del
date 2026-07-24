@@ -776,3 +776,221 @@ Store/Display User Information
 
 This flow ensures that every authenticated request can securely identify the currently logged-in user and provide their information throughout the application.
 
+
+
+
+
+
+
+
+
+
+
+
+# Redux State Management Workflow
+
+Redux Toolkit is used in this project to manage global user state across the application. It allows us to store authenticated user information and access it from any component without prop drilling.
+
+## 1. Install Dependencies
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+---
+
+## 2. Create User Slice
+
+A slice is created to manage user-related data.
+
+```javascript
+import { createSlice } from "@reduxjs/toolkit";
+
+const userSlice = createSlice({
+    name: "user",
+    initialState: {
+        userData: null,
+    },
+    reducers: {
+        setUserData: (state, action) => {
+            state.userData = action.payload;
+        },
+    },
+});
+
+export const { setUserData } = userSlice.actions;
+export default userSlice.reducer;
+```
+
+### Responsibilities:
+
+* Stores the current authenticated user.
+* Updates user data after Sign Up, Sign In, and Google Authentication.
+* Makes user information accessible throughout the application.
+
+---
+
+## 3. Configure the Redux Store
+
+```javascript
+import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "./userSlice";
+
+export const store = configureStore({
+    reducer: {
+        user: userSlice,
+    },
+});
+```
+
+### Responsibilities:
+
+* Combines all reducers.
+* Creates a centralized store for the application.
+* Provides a single source of truth for state management.
+
+---
+
+## 4. Wrap the Application with Provider
+
+The entire application is wrapped inside the `Provider` component so all child components can access the Redux store.
+
+```javascript
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+
+<Provider store={store}>
+    <App />
+</Provider>
+```
+
+### Flow:
+
+```text
+Store
+   ↓
+Provider
+   ↓
+App
+   ↓
+All Components
+```
+
+---
+
+## 5. Dispatch Actions
+
+After successful authentication, user data is stored in Redux.
+
+```javascript
+dispatch(setUserData(result.data));
+```
+
+This is used in:
+
+* Sign Up
+* Sign In
+* Google Authentication
+* Get Current User Hook
+
+---
+
+## 6. Access Redux State
+
+Components can access user data using `useSelector`.
+
+```javascript
+import { useSelector } from "react-redux";
+
+const user = useSelector(
+    (state) => state.user.userData
+);
+
+console.log(user);
+```
+
+---
+
+## 7. Current User Workflow
+
+```text
+User Signs In
+      ↓
+Backend Generates JWT Token
+      ↓
+Token Stored in Cookie
+      ↓
+Frontend Calls /api/user/current
+      ↓
+isAuth Middleware Verifies Token
+      ↓
+getCurrentUser Fetches User Details
+      ↓
+Custom Hook Receives User Data
+      ↓
+dispatch(setUserData(user))
+      ↓
+Redux Store Updated
+      ↓
+Accessible Throughout Application
+```
+
+---
+
+## 8. Benefits of Using Redux
+
+* Centralized state management.
+* Eliminates prop drilling.
+* Maintains user session across pages.
+* Easy debugging with Redux DevTools.
+* Scalable for larger applications.
+* Improves code organization and maintainability.
+
+---
+
+## 9. Redux DevTools
+
+Install the Redux DevTools browser extension to monitor state changes in real time.
+
+Features:
+
+* View current Redux state.
+* Inspect dispatched actions.
+* Track user authentication flow.
+* Debug state updates efficiently.
+
+Example:
+
+```text
+Action: setUserData
+Payload:
+{
+    _id: "123",
+    fullName: "Priyank Chaudhary",
+    email: "priyank@gmail.com",
+    role: "user"
+}
+```
+
+---
+
+## Complete Redux Flow
+
+```text
+User Action
+    ↓
+dispatch()
+    ↓
+Redux Action
+    ↓
+Reducer (userSlice)
+    ↓
+Store Updated
+    ↓
+useSelector()
+    ↓
+Component Re-renders
+```
+
+This implementation uses Redux Toolkit and React Redux to provide efficient, scalable, and maintainable state management for user authentication and profile handling across the application.
+
