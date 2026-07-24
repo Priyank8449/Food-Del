@@ -1099,3 +1099,106 @@ Navbar Displays Current City
 
 This implementation ensures that the user's current city is fetched once, stored globally in Redux, and remains accessible throughout the application.
 
+
+
+## Sign Out Workflow
+
+The application uses JWT-based authentication with HTTP-only cookies. When a user logs out, the authentication token is removed from the browser, and the Redux state is cleared to end the user's session.
+
+### 1. User Clicks Logout
+
+The user clicks the **Log Out** button from the Navbar.
+
+```js
+<div onClick={handleLogOut}>
+    Log Out
+</div>
+```
+
+---
+
+### 2. Frontend Sends Request
+
+The frontend sends a request to the backend sign-out route.
+
+```js
+await axios.get(
+    `${serverUrl}/api/auth/signout`,
+    {
+        withCredentials: true
+    }
+);
+```
+
+---
+
+### 3. Backend Clears Cookie
+
+The backend clears the JWT token stored in the browser.
+
+```js
+export const signOut = async (req, res) => {
+    try {
+        res.clearCookie("token");
+
+        return res.status(200).json({
+            message: "Sign out successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: `Sign out error: ${error}`
+        });
+    }
+};
+```
+
+---
+
+### 4. Clear Redux State
+
+After a successful response, the frontend removes the user information from Redux.
+
+```js
+dispatch(setUserData(null));
+```
+
+---
+
+### 5. User Session Ends
+
+Since the token has been removed:
+
+* `isAuth` middleware cannot verify the user.
+* Requests to protected routes fail.
+* `/api/user/current` returns an unauthorized response.
+* The application updates the UI accordingly.
+
+---
+
+### Sign Out Flow
+
+```text
+User Clicks "Log Out"
+            ↓
+Frontend Calls /api/auth/signout
+            ↓
+Backend Executes res.clearCookie("token")
+            ↓
+JWT Token Removed
+            ↓
+dispatch(setUserData(null))
+            ↓
+Redux Store Updated
+            ↓
+User Session Ends
+            ↓
+Protected Routes Become Inaccessible
+```
+
+### Benefits
+
+* Securely removes the authentication token.
+* Clears global user state.
+* Prevents unauthorized access to protected resources.
+* Keeps frontend and backend authentication states synchronized.
+
