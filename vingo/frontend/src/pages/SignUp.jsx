@@ -9,9 +9,14 @@ import { serverUrl } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
 import{ ClipLoader } from "react-spinners"
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
+
+
 
 
 const SignUp = () => {
+    const dispatch = useDispatch()
     const primaryColor = "red"
     const hoverColor = "#e64323"
     const bgColor = "#fff9f6"
@@ -37,7 +42,7 @@ const SignUp = () => {
                 {
                     withCredentials: true
                 })
-
+                dispatch(setUserData(result.data))
                 console.log(result)
                 setError("")
             setLoading(false)
@@ -63,6 +68,8 @@ const SignUp = () => {
                 role,
                 mobile,
             },{withCredentials:true})
+                            dispatch(setUserData(data))
+
             console.log(data)
         }
         catch(error){
