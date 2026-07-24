@@ -994,3 +994,211 @@ Component Re-renders
 
 This implementation uses Redux Toolkit and React Redux to provide efficient, scalable, and maintainable state management for user authentication and profile handling across the application.
 
+
+
+
+
+## Location Management Workflow
+
+The application uses the browser's Geolocation API along with the Geoapify Reverse Geocoding API to determine the user's current city and make it available throughout the application using Redux.
+
+### 1. Get User Coordinates
+
+The `useGetCity` custom hook uses:
+
+```js
+navigator.geolocation.getCurrentPosition()
+```
+
+to fetch the user's:
+
+* Latitude
+* Longitude
+
+Example:
+
+```js
+navigator.geolocation.getCurrentPosition((position) => {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+});
+```
+
+---
+
+### 2. Reverse Geocoding
+
+The coordinates are sent to the Geoapify API to retrieve the corresponding city name.
+
+```js
+axios.get(
+    `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
+);
+```
+
+---
+
+### 3. Store City in Redux
+
+Once the city is obtained, it is stored in Redux using:
+
+```js
+dispatch(setCity(result.data.results[0].city));
+```
+
+The Redux state is updated as follows:
+
+```js
+{
+    userData: null,
+    city: ""
+}
+```
+
+---
+
+### 4. Access City Throughout the Application
+
+Components can access the city using `useSelector`.
+
+```js
+const { city } = useSelector((state) => state.user);
+```
+
+This allows the Navbar and other components to display the user's current location without passing props between components.
+
+---
+
+### 5. Location Workflow
+
+```text
+Browser Geolocation
+        ↓
+Get Latitude & Longitude
+        ↓
+Geoapify Reverse Geocoding API
+        ↓
+Retrieve City Name
+        ↓
+dispatch(setCity(city))
+        ↓
+Redux Store Updated
+        ↓
+Navbar Displays Current City
+```
+
+---
+
+### 6. Benefits
+
+* Automatic location detection.
+* Centralized location state management.
+* No prop drilling.
+* Reusable across multiple components.
+* Improves user experience by showing location-specific information.
+
+This implementation ensures that the user's current city is fetched once, stored globally in Redux, and remains accessible throughout the application.
+
+
+
+## Sign Out Workflow
+
+The application uses JWT-based authentication with HTTP-only cookies. When a user logs out, the authentication token is removed from the browser, and the Redux state is cleared to end the user's session.
+
+### 1. User Clicks Logout
+
+The user clicks the **Log Out** button from the Navbar.
+
+```js
+<div onClick={handleLogOut}>
+    Log Out
+</div>
+```
+
+---
+
+### 2. Frontend Sends Request
+
+The frontend sends a request to the backend sign-out route.
+
+```js
+await axios.get(
+    `${serverUrl}/api/auth/signout`,
+    {
+        withCredentials: true
+    }
+);
+```
+
+---
+
+### 3. Backend Clears Cookie
+
+The backend clears the JWT token stored in the browser.
+
+```js
+export const signOut = async (req, res) => {
+    try {
+        res.clearCookie("token");
+
+        return res.status(200).json({
+            message: "Sign out successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: `Sign out error: ${error}`
+        });
+    }
+};
+```
+
+---
+
+### 4. Clear Redux State
+
+After a successful response, the frontend removes the user information from Redux.
+
+```js
+dispatch(setUserData(null));
+```
+
+---
+
+### 5. User Session Ends
+
+Since the token has been removed:
+
+* `isAuth` middleware cannot verify the user.
+* Requests to protected routes fail.
+* `/api/user/current` returns an unauthorized response.
+* The application updates the UI accordingly.
+
+---
+
+### Sign Out Flow
+
+```text
+User Clicks "Log Out"
+            ↓
+Frontend Calls /api/auth/signout
+            ↓
+Backend Executes res.clearCookie("token")
+            ↓
+JWT Token Removed
+            ↓
+dispatch(setUserData(null))
+            ↓
+Redux Store Updated
+            ↓
+User Session Ends
+            ↓
+Protected Routes Become Inaccessible
+```
+
+### Benefits
+
+* Securely removes the authentication token.
+* Clears global user state.
+* Prevents unauthorized access to protected resources.
+* Keeps frontend and backend authentication states synchronized.
+
