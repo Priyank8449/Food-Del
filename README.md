@@ -994,3 +994,108 @@ Component Re-renders
 
 This implementation uses Redux Toolkit and React Redux to provide efficient, scalable, and maintainable state management for user authentication and profile handling across the application.
 
+
+
+
+
+## Location Management Workflow
+
+The application uses the browser's Geolocation API along with the Geoapify Reverse Geocoding API to determine the user's current city and make it available throughout the application using Redux.
+
+### 1. Get User Coordinates
+
+The `useGetCity` custom hook uses:
+
+```js
+navigator.geolocation.getCurrentPosition()
+```
+
+to fetch the user's:
+
+* Latitude
+* Longitude
+
+Example:
+
+```js
+navigator.geolocation.getCurrentPosition((position) => {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+});
+```
+
+---
+
+### 2. Reverse Geocoding
+
+The coordinates are sent to the Geoapify API to retrieve the corresponding city name.
+
+```js
+axios.get(
+    `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
+);
+```
+
+---
+
+### 3. Store City in Redux
+
+Once the city is obtained, it is stored in Redux using:
+
+```js
+dispatch(setCity(result.data.results[0].city));
+```
+
+The Redux state is updated as follows:
+
+```js
+{
+    userData: null,
+    city: ""
+}
+```
+
+---
+
+### 4. Access City Throughout the Application
+
+Components can access the city using `useSelector`.
+
+```js
+const { city } = useSelector((state) => state.user);
+```
+
+This allows the Navbar and other components to display the user's current location without passing props between components.
+
+---
+
+### 5. Location Workflow
+
+```text
+Browser Geolocation
+        ↓
+Get Latitude & Longitude
+        ↓
+Geoapify Reverse Geocoding API
+        ↓
+Retrieve City Name
+        ↓
+dispatch(setCity(city))
+        ↓
+Redux Store Updated
+        ↓
+Navbar Displays Current City
+```
+
+---
+
+### 6. Benefits
+
+* Automatic location detection.
+* Centralized location state management.
+* No prop drilling.
+* Reusable across multiple components.
+* Improves user experience by showing location-specific information.
+
+This implementation ensures that the user's current city is fetched once, stored globally in Redux, and remains accessible throughout the application.
+
