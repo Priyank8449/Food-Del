@@ -1202,3 +1202,150 @@ Protected Routes Become Inaccessible
 * Prevents unauthorized access to protected resources.
 * Keeps frontend and backend authentication states synchronized.
 
+
+
+
+
+
+## Image Upload Workflow (Multer + Cloudinary)
+
+The application uses **Multer** and **Cloudinary** to handle image uploads. Multer stores uploaded files temporarily on the server, and Cloudinary is used for permanent cloud storage.
+
+### 1. Install Dependencies
+
+```bash
+npm install multer cloudinary
+```
+
+---
+
+### 2. Configure Multer
+
+Multer is responsible for handling multipart/form-data and temporarily storing uploaded files.
+
+```js
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "/public");
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+export const upload = multer({ storage });
+```
+
+#### Responsibilities
+
+* Accept file uploads from the frontend.
+* Store files temporarily in the `public` folder.
+* Preserve the original filename.
+
+---
+
+### 3. Configure Cloudinary
+
+Cloudinary credentials are stored in environment variables.
+
+```env
+CLOUDINARY_CLOUDNAME=your_cloud_name
+CLOUDINARY_APIKEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+Cloudinary is configured using:
+
+```js
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUDNAME,
+    api_key: process.env.CLOUDINARY_APIKEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+```
+
+---
+
+### 4. Upload File to Cloudinary
+
+The `uploadOnCloudinary()` utility uploads the file to Cloudinary and returns the hosted image URL.
+
+```js
+const result = await cloudinary.uploader.upload(file);
+```
+
+After a successful upload:
+
+```js
+fs.unlinkSync(file);
+```
+
+This removes the temporary file from the local machine.
+
+---
+
+### 5. Return Image URL
+
+The utility returns:
+
+```js
+result.secure_url
+```
+
+Example:
+
+```text
+https://res.cloudinary.com/demo/image/upload/v123456/product.jpg
+```
+
+This URL is stored in MongoDB and can be used directly in the frontend.
+
+---
+
+### 6. Upload Flow
+
+```text
+User Selects Image
+        ↓
+Frontend Sends FormData
+        ↓
+Multer Receives File
+        ↓
+Temporarily Stores File
+        ↓
+uploadOnCloudinary()
+        ↓
+Cloudinary Upload
+        ↓
+Returns secure_url
+        ↓
+Delete Local File
+        ↓
+Store URL in Database
+        ↓
+Display Image in Frontend
+```
+
+---
+
+### 7. Benefits
+
+* Secure cloud-based image storage.
+* Reduces server storage usage.
+* Fast image delivery through Cloudinary CDN.
+* Automatic cleanup of temporary files.
+* Scalable for large numbers of uploads.
+
+### Example Use Case
+
+This workflow is used for:
+
+* Product Images
+* Restaurant Images
+* User Profile Pictures
+* Banner Images
+* Category Images
+
+The combination of Multer and Cloudinary provides an efficient and scalable solution for handling media uploads within the application.
+
+
