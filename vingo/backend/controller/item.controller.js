@@ -7,8 +7,8 @@ export const addItem = async (req, res) => {
     try {
         const { name, category, foodType, price } = req.body
         let image;
-        if (!req.file) {
-            iamge = await uploadOnCloudinary(req.file.path)
+        if(req.file) {
+            image = await uploadOnCloudinary(req.file.path)
 
 
         }
@@ -19,7 +19,7 @@ export const addItem = async (req, res) => {
             return res.status(400).json({ message: "shop not found" })
         }
         const item = await Item.create({
-            name, category, foodType, price, image, shop: shop, _id
+            name, category, foodType, price, image, shop: shop._id
 
         })
 

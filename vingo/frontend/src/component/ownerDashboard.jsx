@@ -1,8 +1,11 @@
 import React from 'react'
+import Nav from './Nav'
 
 const OwnerDashboard = () => {
   return (
-    <div>ownerDashboard</div>
+    <>
+    <h1> owner</h1>
+    </>
   )
 }
 
