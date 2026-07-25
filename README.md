@@ -1349,6 +1349,309 @@ This workflow is used for:
 The combination of Multer and Cloudinary provides an efficient and scalable solution for handling media uploads within the application.
 
 
+
+
+
+
+
+
+
+
+
+# Shop & Item Management Workflow
+
+This module allows restaurant owners to create and manage their shops and food items. It also supports image uploads using Multer and Cloudinary.
+
+## Technologies Used
+
+* Node.js
+* Express.js
+* MongoDB & Mongoose
+* Multer
+* Cloudinary
+* JWT Authentication
+
+---
+
+## 1. Shop Model
+
+The `Shop` model stores information about a restaurant/shop.
+
+### Fields:
+
+* `name`
+* `city`
+* `state`
+* `address`
+* `image`
+* `owner` (Reference to User)
+
+### Responsibilities:
+
+* Stores shop details.
+* Associates a shop with its owner.
+* Maintains restaurant information.
+
+---
+
+## 2. Item Model
+
+The `Item` model stores all food items belonging to a shop.
+
+### Fields:
+
+* `name`
+* `category`
+* `foodType` (Veg/Non-Veg)
+* `price`
+* `image`
+* `shop` (Reference to Shop)
+
+### Responsibilities:
+
+* Stores menu items.
+* Maintains the relationship between items and shops.
+* Supports item editing and management.
+
+---
+
+## 3. Image Upload Workflow
+
+Images are uploaded using Multer and stored permanently on Cloudinary.
+
+### Multer Configuration
+
+```javascript
+export const upload = multer({ storage });
+```
+
+### Cloudinary Workflow
+
+```javascript
+uploadOnCloudinary(req.file.path);
+```
+
+### Flow
+
+User Uploads Image
+↓
+Multer Stores File Temporarily
+↓
+Cloudinary Uploads Image
+↓
+Cloudinary Returns Secure URL
+↓
+Temporary File Deleted
+↓
+URL Stored in MongoDB
+
+### Benefits
+
+* Fast image delivery.
+* Reduced server storage usage.
+* CDN support via Cloudinary.
+* Secure image URLs.
+
+---
+
+## 4. Create/Edit Shop Workflow
+
+Owners can create a new shop or edit existing shop details.
+
+### Endpoint
+
+```bash
+POST /api/shop/create-edit
+```
+
+### Workflow
+
+Owner Sends Shop Details
+↓
+isAuth Middleware Verifies User
+↓
+Check if Shop Exists
+↓
+If Not Exists → Create Shop
+↓
+Else → Update Existing Shop
+↓
+Upload Shop Image to Cloudinary
+↓
+Populate Owner Details
+↓
+Return Shop Response
+
+### Example Response
+
+```json
+{
+    "_id": "shop123",
+    "name": "Anytime Craving",
+    "city": "Hathras",
+    "state": "Uttar Pradesh",
+    "address": "Near Bus Stand",
+    "image": "https://cloudinary.com/xyz.jpg"
+}
+```
+
+---
+
+## 5. Add Item Workflow
+
+Restaurant owners can add food items to their menu.
+
+### Endpoint
+
+```bash
+POST /api/item/add
+```
+
+### Workflow
+
+Owner Adds Item Details
+↓
+isAuth Middleware Verifies User
+↓
+Find Shop Using req.userId
+↓
+Upload Item Image
+↓
+Create Item in Database
+↓
+Return Created Item
+
+### Example
+
+```json
+{
+    "name": "Paneer Pizza",
+    "category": "Pizza",
+    "foodType": "Veg",
+    "price": 299
+}
+```
+
+---
+
+## 6. Edit Item Workflow
+
+Owners can modify existing menu items.
+
+### Endpoint
+
+```bash
+PUT /api/item/edit/:itemId
+```
+
+### Workflow
+
+Owner Selects Item
+↓
+Send Updated Details
+↓
+Upload New Image (Optional)
+↓
+Find Item by ID
+↓
+Update Item Details
+↓
+Return Updated Item
+
+---
+
+## 7. Routes
+
+### Shop Routes
+
+```javascript
+router.post(
+    "/create-edit",
+    isAuth,
+    upload.single("image"),
+    createEditShop
+);
+```
+
+### Item Routes
+
+```javascript
+router.post(
+    "/add",
+    isAuth,
+    upload.single("image"),
+    addItem
+);
+
+router.put(
+    "/edit/:itemId",
+    isAuth,
+    upload.single("image"),
+    editItem
+);
+```
+
+---
+
+## 8. Authentication Flow
+
+All shop and item routes are protected using JWT authentication.
+
+```text
+Request
+   ↓
+isAuth Middleware
+   ↓
+Extract Token from Cookie
+   ↓
+Verify JWT
+   ↓
+Get User ID
+   ↓
+Proceed to Controller
+```
+
+---
+
+## 9. Complete System Workflow
+
+```text
+Owner Login
+    ↓
+JWT Token Generated
+    ↓
+Create/Edit Shop
+    ↓
+Upload Shop Image
+    ↓
+Add Food Items
+    ↓
+Upload Item Images
+    ↓
+Store Data in MongoDB
+    ↓
+Display Menu to Users
+```
+
+---
+
+## 10. Key Features
+
+* Role-based access for restaurant owners.
+* Shop creation and editing.
+* Food item management.
+* Cloudinary image uploads.
+* JWT authentication.
+* MongoDB relationships using references.
+* Scalable and maintainable architecture.
+
+This implementation provides a complete restaurant management system where owners can manage their shops and menu items efficiently while ensuring secure authentication and optimized image handling.
+
+
+
+
+
+
 # Interview Questions Based on the Project
 
 The following are some common interview questions that can be asked based on the **Anytime Craving** project, which is built using React, Redux Toolkit, Node.js, Express.js, MongoDB, JWT, Firebase Authentication, Cloudinary, Multer, and Nodemailer.
