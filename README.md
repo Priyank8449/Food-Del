@@ -1349,3 +1349,126 @@ This workflow is used for:
 The combination of Multer and Cloudinary provides an efficient and scalable solution for handling media uploads within the application.
 
 
+
+
+
+
+interview question
+
+Tell me about your project "Anytime Craving."
+What problem does your application solve?
+Why did you choose the MERN stack for this project?
+What are the major features of your application?
+What challenges did you face during development?
+Authentication
+Explain the complete Sign Up workflow.
+Explain the Sign In workflow.
+How are you implementing JWT authentication?
+Why are you storing JWT tokens in cookies instead of localStorage?
+What is the purpose of httpOnly cookies?
+How does your isAuth middleware work?
+How do you fetch the currently logged-in user?
+What happens if the token is expired?
+How does Google Authentication work in your application?
+What is the difference between normal Sign In and Google Sign In?
+Password Reset
+Explain the Forgot Password workflow.
+How are OTPs generated?
+Where do you store OTPs and their expiration time?
+Why did you use Nodemailer?
+How do you ensure OTP security?
+What happens if a user enters an expired OTP?
+Redux
+Why did you use Redux Toolkit?
+What is a slice in Redux?
+Explain your userSlice.
+What is the difference between useSelector and useDispatch?
+What is stored in your Redux store?
+How does Redux prevent prop drilling?
+Explain the Redux flow in your application.
+How would you persist Redux state after a page refresh?
+React
+What are React Hooks?
+Explain useState, useEffect, and useContext.
+Why did you create custom hooks like useGetCurrentUser?
+What is the purpose of useNavigate?
+What is the difference between controlled and uncontrolled components?
+Why did you use React Router?
+Backend
+Explain your backend folder structure.
+Why did you separate routes, controllers, middleware, and models?
+What is the purpose of Express middleware?
+What is the difference between middleware and controllers?
+What HTTP methods are used in your project?
+MongoDB
+Why did you choose MongoDB?
+What fields are present in your User model?
+Explain findOne() and findById().
+What happens if MongoDB Atlas is down?
+What is Mongoose?
+How do you connect MongoDB Atlas to your application?
+File Upload
+Why are you using Multer?
+How does Multer store files?
+Why are you using Cloudinary?
+Explain the image upload workflow.
+Image Upload Flow:
+Frontend
+   ↓
+Multer Middleware
+   ↓
+Temporary File Storage
+   ↓
+Cloudinary Upload
+   ↓
+Receive Secure URL
+   ↓
+Delete Local File
+   ↓
+Store URL in Database
+APIs
+What APIs are used in your project?
+Explain the Geoapify API integration.
+How do you fetch the user's current city?
+What is CORS, and why is it needed?
+What is the difference between GET, POST, PUT, and DELETE requests?
+Security
+What security measures have you implemented?
+Why are environment variables important?
+What information is stored in .env?
+How do you secure API keys?
+Why should .env not be pushed to GitHub?
+Deployment
+How would you deploy this project?
+Where would you host the frontend and backend?
+What changes are required before production deployment?
+What changes would you make to the cookie configuration in production?
+res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+});
+Problem Solving Questions
+You received Invalid Hook Call. How did you fix it?
+How did you solve the react-redux context value error?
+What caused the ERR_CONNECTION_REFUSED error?
+How did you fix the MongoDB Atlas connection issue?
+Why was User is not defined appearing in getCurrentUser?
+What debugging techniques do you use?
+Advanced Questions
+How would you implement role-based authentication (Admin/User/Owner)?
+How would you add payment integration?
+How would you optimize performance?
+How would you implement caching?
+How would you scale this application for 1 million users?
+Most Important Questions (Very Likely)
+Explain your project architecture.
+Explain JWT authentication.
+Explain Redux Toolkit.
+Explain the Forgot Password workflow.
+Explain Google Authentication.
+Explain the isAuth middleware.
+Explain Cloudinary + Multer integration.
+Explain how Redux updates state.
+Explain the Sign Out workflow.
+What were the biggest challenges while building this project?
