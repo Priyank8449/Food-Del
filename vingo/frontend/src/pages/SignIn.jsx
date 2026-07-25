@@ -43,9 +43,10 @@ dispatch(setUserData(result.data))
                 console.log(result)
                 setError("")
                 setLoading(false)
-
-
-        }catch (error) {
+                
+                
+            }catch (error) {
+            setLoading(false)
             setError(error.response.data.message)
     console.log(error);
 }

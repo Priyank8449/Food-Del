@@ -45,12 +45,13 @@ const SignUp = () => {
                 dispatch(setUserData(result.data))
                 console.log(result)
                 setError("")
-            setLoading(false)
-
-
-        } catch (error){
-            setError(error.response.data.message)
-            console.log(error.response?.data)
+                setLoading(false)
+                
+                
+            } catch (error){
+                setError(error.response.data.message)
+                console.log(error.response?.data)
+                setLoading(false)
 
         }
     }
