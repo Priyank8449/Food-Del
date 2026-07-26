@@ -1650,6 +1650,247 @@ This implementation provides a complete restaurant management system where owner
 
 
 
+# Shop Management Workflow
+
+The Shop Management module enables restaurant owners to create, edit, and manage their shops on the platform. Redux Toolkit is used to maintain shop data globally, ensuring seamless access across the application.
+
+## 1. Shop Redux Slice
+
+A dedicated `ownerSlice` is created to manage the current owner's shop information.
+
+```js
+const ownerSlice = createSlice({
+    name: "owner",
+    initialState: {
+        myShopData: null,
+    },
+    reducers: {
+        setMyShopData: (state, action) => {
+            state.myShopData = action.payload;
+        },
+    },
+});
+```
+
+### Responsibilities
+
+* Stores the current owner's shop details.
+* Updates shop information after creating or editing a shop.
+* Makes shop data accessible throughout the owner dashboard.
+
+---
+
+## 2. Shop Routes
+
+The following API routes are implemented for shop management:
+
+| Method | Route                   | Description                      |
+| ------ | ----------------------- | -------------------------------- |
+| POST   | `/api/shop/create-edit` | Create or update a shop          |
+| GET    | `/api/shop/get-my`      | Fetch the logged-in owner's shop |
+
+### Route Configuration
+
+```js
+shopRouter.post(
+    "/create-edit",
+    isAuth,
+    upload.single("image"),
+    createEditShop
+);
+
+shopRouter.get(
+    "/get-my",
+    isAuth,
+    getMyShop
+);
+```
+
+---
+
+## 3. Create/Edit Shop Workflow
+
+### Flow
+
+```text
+Owner Opens Dashboard
+        ↓
+Clicks "Get Started"
+        ↓
+Navigates to Create Shop Page
+        ↓
+Fills Shop Details
+        ↓
+Uploads Shop Image
+        ↓
+Image Uploaded to Cloudinary
+        ↓
+POST /api/shop/create-edit
+        ↓
+Shop Stored in MongoDB
+        ↓
+Redux Updated
+        ↓
+Owner Dashboard Displays Shop
+```
+
+### Features
+
+* Create a new restaurant/shop.
+* Edit existing shop information.
+* Upload shop images using Cloudinary.
+* Associate shops with authenticated owners.
+
+---
+
+## 4. Fetch Current Shop
+
+A custom hook, `useGetMyShop`, is used to fetch the current owner's shop data.
+
+```js
+const useGetMyShop = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const fetchShop = async () => {
+            const result = await axios.get(
+                `${serverUrl}/api/shop/get-my`,
+                { withCredentials: true }
+            );
+
+            dispatch(setMyShopData(result.data));
+        };
+
+        fetchShop();
+    }, []);
+};
+```
+
+### Responsibilities
+
+* Fetches shop data on component mount.
+* Dispatches `setMyShopData`.
+* Keeps Redux synchronized with backend data.
+
+---
+
+## 5. Get My Shop Controller
+
+```js
+export const getMyShop = async (req, res) => {
+    try {
+        const shop = await Shop.findOne({
+            owner: req.userId,
+        }).populate("owner items");
+
+        if (!shop) {
+            return res.status(404).json({
+                message: "Shop not found",
+            });
+        }
+
+        return res.status(200).json(shop);
+    } catch (error) {
+        return res.status(500).json({
+            message: `Get My Shop Error: ${error}`,
+        });
+    }
+};
+```
+
+### Responsibilities
+
+* Verifies authenticated owner.
+* Fetches shop using `req.userId`.
+* Populates owner and item information.
+* Returns shop details to the frontend.
+
+---
+
+## 6. Owner Dashboard Workflow
+
+```text
+Owner Logs In
+      ↓
+JWT Token Stored in Cookie
+      ↓
+OwnerDashboard Loads
+      ↓
+useGetMyShop() Executes
+      ↓
+GET /api/shop/get-my
+      ↓
+Backend Verifies Token
+      ↓
+Shop Data Returned
+      ↓
+dispatch(setMyShopData())
+      ↓
+Redux Store Updated
+      ↓
+Dashboard Re-renders
+```
+
+---
+
+## 7. Cloudinary Integration
+
+Shop images are uploaded using Cloudinary.
+
+### Workflow
+
+```text
+Owner Selects Image
+        ↓
+Multer Stores File Temporarily
+        ↓
+uploadOnCloudinary()
+        ↓
+Cloudinary Generates URL
+        ↓
+Temporary File Deleted
+        ↓
+Image URL Saved in MongoDB
+```
+
+---
+
+## 8. Benefits
+
+* Centralized shop state management.
+* Persistent owner dashboard experience.
+* Easy image handling using Cloudinary.
+* Secure authentication using JWT.
+* Scalable architecture for adding menus, orders, and analytics.
+* Improved maintainability and code organization.
+
+---
+
+## 9. Complete Shop Management Flow
+
+```text
+Owner Authentication
+        ↓
+Create/Edit Shop
+        ↓
+Upload Image
+        ↓
+Save Shop in MongoDB
+        ↓
+Fetch Shop Data
+        ↓
+Update Redux Store
+        ↓
+Render Owner Dashboard
+        ↓
+Manage Items and Orders
+```
+
+This implementation provides a scalable and maintainable shop management system for restaurant owners, enabling efficient handling of shop information, image uploads, and dashboard integration.
+
+
+
+
 
 
 # Interview Questions Based on the Project
