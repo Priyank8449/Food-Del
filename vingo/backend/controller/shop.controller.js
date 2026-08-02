@@ -1,5 +1,5 @@
 import Shop from "../models/shop.model.js";
-import uploadOnCloudinary from "../utils/cloudinary";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export  const createEditShop =async(req,res)=>{
     try{
@@ -29,9 +29,29 @@ export  const createEditShop =async(req,res)=>{
     catch(error){
         return res.status(500).json({message:`create shop error ${error} `})
     }
-
+    
 }
 
 
 
 
+
+
+export const getMyShop=async(req,res)=>{
+    try{
+        const shop=await Shop.findOne({owner:userId}).populate("owner items")
+        if(!shop){
+            return null
+        }
+        
+        return res.status(200).json(shop)
+        
+        
+    }
+    catch(error){
+        return res.status(500).json({message:`get  my  shop error ${error} `})
+        
+
+
+    }
+}

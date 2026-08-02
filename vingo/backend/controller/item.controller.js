@@ -1,7 +1,7 @@
-import { upload } from "../middleware/multer";
-import Item from "../models/item.model";
-import Shop from "../models/shop.model";
-import uploadOnCloudinary from "../utils/cloudinary";
+import { upload } from "../middleware/multer.js";
+import Item from "../models/item.model.js";
+import Shop from "../models/shop.model.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export const addItem = async (req, res) => {
     try {
