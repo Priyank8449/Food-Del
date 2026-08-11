@@ -6,6 +6,7 @@ export  const createEditShop =async(req,res)=>{
         const {name,city,state,address}=req.body;
         let image;
         if(req.file){
+            console.log(req.file)
             image=await uploadOnCloudinary(req.file.path)
 
         }
@@ -23,7 +24,7 @@ export  const createEditShop =async(req,res)=>{
         },{new:true})
         }
       
-        await shop.populate("owner")
+        await shop.populate("owner,items")
         return res.status(201).json(shop)
     }
     catch(error){

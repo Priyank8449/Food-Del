@@ -37,7 +37,7 @@ const Nav = () => {
     }
     return (
         <>
-            <div className='w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-olive-300/50 overflow-visible:'>
+            <div className='w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-olive-300 overflow-visible:'>
 
                 {
                     showSearch && userData.role == "user" &&

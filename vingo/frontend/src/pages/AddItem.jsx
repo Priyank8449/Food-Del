@@ -8,18 +8,31 @@ import { linkWithCredential } from 'firebase/auth';
 import { setMyShopData } from '../redux/ownerSlice';
 import axios from "axios";
 
-const CreateEditShop = () => {
+const AddItem = () => {
   const { myShopData } = useSelector(state => state.owner)
-  const { currentCity , currentState ,currentAddress } = useSelector(state => state.user)
   const navigate = useNavigate()
 const dispatch=useDispatch()
 
-  const [name,setName]=useState(myShopData?.name ||"")
-  const [city,setCity]=useState(myShopData?.city || currentCity ||"")
-  const [state,setState]=useState(myShopData?.state || currentState ||"")
-  const [address,setAddress]=useState(myShopData?.address || currentAddress ||"")
-  const[frontendImage,setFrontendImage]=useState(myShopData?.image ||null)
+  const [name,setName]=useState(null)
+  const [price,setPrice]=useState(0)
+
+  const[frontendImage,setFrontendImage]=useState(null)
   const[backendImage,setBackendImage]=useState(null)
+  const[category,setCategory]=useState()
+  const[foodType,setFoodType]=useState("veg")
+
+  const  categories=[ 
+            "Snacks",
+            "Main Course",
+            "Desserts",
+            "Pizza",
+            "Burger",
+            "Sandwiches",
+            "South Indian",
+            "North Indian",
+            "Chinese",
+            "Fast Food",
+            "Others"]
 
 const handleImage=(e)=>{
   const file=e.target.files[0]
@@ -36,9 +49,10 @@ const  handleSubmit= async(e)=>{
     const formData=new FormData()
 
      formData.append("name",name)
-     formData.append("city",city)
-     formData.append("state",state)
-     formData.append("address",address)
+     formData.append("category",category)
+     formData.append("foodType",foodType)
+     formData.append("price",price)
+
 
 
      if(backendImage){
@@ -46,7 +60,7 @@ const  handleSubmit= async(e)=>{
 
      }
 
-     const  result=await axios.post(`${serverUrl}/api/shop/create-edit`,formData,
+     const  result=await axios.post(`${serverUrl}/api/item/add-item`,formData,
       {withCredentials:true}
      )
 
@@ -82,9 +96,7 @@ console.log(result.data)
           </div >
           <div className='text-3xl font-extrabold text-gray-900
           '>
-            {
-              myShopData? "Edit Shop" : "Add Shop"
-            }
+            Add Food
           </div>
 
         </div>
@@ -93,39 +105,58 @@ console.log(result.data)
           
           <div>
             <label className=" block text-sm font-medium text-gray-700 mb-1">
-              Shop Name
+               Name
             </label>
 
-            <input onChange={(e)=>setName(e.target.value)} value={name} type="text" placeholder='Enter Shop Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
+            <input onChange={(e)=>setName(e.target.value)}  type="text" placeholder='Enter Shop Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
           </div>
           <div>
             <label className=" block text-sm font-medium text-gray-700 mb-1">
-              Shop Address
+              Price
             </label>
 
-            <input onChange={(e)=>setAddress(e.target.value)} value={address} type="text" placeholder='Enter Shop Address ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
+            <input onChange={(e)=>setPrice(e.target.value)} value={price} type="number" placeholder='Enter  Price ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
           </div>
+          <div>
+            <label className=" block text-sm font-medium text-gray-700 mb-1">
+              Select Category
+            </label>
+
+            <select onChange={(e)=>setCategory(e.target.value)} value={category} type="number" placeholder='Enter  Price ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' 
+                >
+
+                    <option value="">Select Category </option>
+                    {categories.map((cate,index)=>(
+                        <option value={cate} key="index"> {cate}</option>
+                    ))}
+
+             </select>
+          </div>
+          <div>
+            <label className=" block text-sm font-medium text-gray-700 mb-1">
+              Select Food Type
+            </label>
+
+            <select onChange={(e)=>setCategory(e.target.value)} value={foodType} type="number" placeholder='Enter  Price ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' 
+                >
+
+                    <option value ="veg">Veg </option>
+                    <option value ="non veg">Non veg </option>
+                    
+                    
+
+             </select>
+          </div>
+          
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4' >
-            <div>
-              <label className=" block text-sm font-medium text-gray-700 mb-1">
-                City
-              </label>
-
-              <input onChange={(e)=>setCity(e.target.value)} value={city} type="text"  placeholder='Enter City ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
-            </div>
-            <div>
-              <label className=" block text-sm font-medium text-gray-700 mb-1">
-                State
-              </label>
-
-              <input onChange={(e)=>setState(e.target.value)} value={state} type="text" placeholder='Enter State ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
-            </div>
+            
+           
           </div>
 
           <div>
             <label className=" block text-sm font-medium text-gray-700 mb-1">
-              Shop Image
+            Food Image
             </label>
 
             <input onChange={handleImage} type="file" accept='image/*' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
@@ -149,4 +180,4 @@ console.log(result.data)
   )
 }
 
-export default CreateEditShop
+export default AddItem

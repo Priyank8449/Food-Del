@@ -27,11 +27,16 @@ const shopSchema=new mongoose.Schema({
         type:String,
         required:true
     },
-    items:{
+    items:[{
+
         type:mongoose.Schema.Types.ObjectId,
         ref:"Item",
+    }],
 
-    }
+
+        default:[]
+
+    
 
 
 
