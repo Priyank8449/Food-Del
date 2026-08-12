@@ -1,10 +1,12 @@
 import React from 'react'
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 
 const OwnerItemCard = ({data}) => {
+    const navigate= useNavigate()
   return (
     <div className='flex bg-white rounded-lg shadow-md overflow-hidden border border-red-500 w-full max-w-2xl'>
 
@@ -22,9 +24,19 @@ const OwnerItemCard = ({data}) => {
             </div>
             <div className='flex items-center justify-between'>
                 <div className='text-red-500 font-bold'>{data.price}</div>
-                <div className='flex p2 rounded-full hover:bg-red-500/10 text-red-500 items-center gap-2~'>
-                <FaPencilAlt />
-                    <FaTrashAlt />
+
+
+                <div  className='flex items-center gap-2'>
+
+                <div onClick={()=>navigate(`/edit-item/${data._id}`)} className='p-2 cursor-pointer rounded-full hover:bg-red-900/30 text-red-500 '>
+                <FaPencilAlt size={16} />
+
+                </div>
+
+                <div className='p-2 cursor-pointer rounded-full hover:bg-red-900/30 text-red-500 '>
+                    <FaTrashAlt size={16} />
+                    
+                </div>
                 </div>
 
 
