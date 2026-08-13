@@ -7,6 +7,7 @@ import { serverUrl } from '../App';
 import { linkWithCredential } from 'firebase/auth';
 import { setMyShopData } from '../redux/ownerSlice';
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const EditItem = () => {
     const { myShopData } = useSelector(state => state.owner)
@@ -24,6 +25,8 @@ const EditItem = () => {
     const [backendImage, setBackendImage] = useState(null)
     const [category, setCategory] = useState( "")
     const [foodType, setFoodType] = useState("")
+
+    const [loading,setloading]=useState(false)
 
 
     const categories = [
@@ -48,6 +51,7 @@ const EditItem = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setloading(true)
 
         try {
 
@@ -71,13 +75,16 @@ const EditItem = () => {
 
             dispatch(setMyShopData(result.data))
             console.log(result.data)
-
-
+            setloading(false)
+            navigate("/")
+            
+            
         } catch (error) {
             console.log("STATUS:", error.response?.status);
             console.log("SERVER RESPONSE:", error.response?.data);
             console.log("MESSAGE:", error.message);
-
+            setloading(false)
+            
 
         }
     }
@@ -199,7 +206,16 @@ const EditItem = () => {
                     }
 
 
-                    <button onClick={handleSubmit} className='w-full cursor-pointer bg-red-900 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>Save</button>
+                    <button disabled={loading} onClick={handleSubmit} className='w-full cursor-pointer bg-red-900 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>
+                        
+                        {
+                            loading? <ClipLoader size={20} color='white'/>
+                            :
+                            "save"
+                        }
+                        </button>
+
+
                 </form>
 
             </div>

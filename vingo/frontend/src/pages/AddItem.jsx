@@ -7,6 +7,7 @@ import { serverUrl } from '../App';
 import { linkWithCredential } from 'firebase/auth';
 import { setMyShopData } from '../redux/ownerSlice';
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const AddItem = () => {
   const { myShopData } = useSelector(state => state.owner)
@@ -20,6 +21,7 @@ const dispatch=useDispatch()
   const[backendImage,setBackendImage]=useState(null)
   const[category,setCategory]=useState()
   const[foodType,setFoodType]=useState("veg")
+  const[loading,setLoading]=useState(false)
 
   const  categories=[ 
             "Snacks",
@@ -43,6 +45,7 @@ const handleImage=(e)=>{
 
 const  handleSubmit= async(e)=>{
   e.preventDefault();
+  setLoading(true)
   
   try{
 
@@ -66,12 +69,15 @@ const  handleSubmit= async(e)=>{
 
      dispatch(setMyShopData(result.data))
 console.log(result.data)
+setLoading(false)
+navigate("/")
 
 
-  }catch (error) {
-    console.log("STATUS:", error.response?.status);
-    console.log("SERVER RESPONSE:", error.response?.data);
-    console.log("MESSAGE:", error.message);
+}catch (error) {
+  console.log("STATUS:", error.response?.status);
+  console.log("SERVER RESPONSE:", error.response?.data);
+  console.log("MESSAGE:", error.message);
+  setLoading(false)
 
 
   }
@@ -171,7 +177,13 @@ console.log(result.data)
           }
           
 
-          <button onClick={handleSubmit} className='w-full cursor-pointer bg-red-900 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>Save</button>
+          <button onClick={handleSubmit} className='w-full cursor-pointer bg-red-900 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>
+            
+            {
+              loading? <ClipLoader size={20} color='white'/>
+              :"save"
+            }
+          </button>
         </form>
 
       </div>

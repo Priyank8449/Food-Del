@@ -21,10 +21,10 @@ export  const createEditShop =async(req,res)=>{
         }else{
                shop= await Shop.findByIdAndUpdate(shop._id,{
             name,city,state,address,image,owner:req.userId
-        },{new:true})
+        },{returnDocument:"after"})
         }
       
-        await shop.populate("owner,items")
+        await shop.populate("owner items")
         return res.status(201).json(shop)
     }
     catch(error){

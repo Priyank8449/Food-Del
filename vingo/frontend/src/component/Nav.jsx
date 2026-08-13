@@ -11,16 +11,19 @@ import axios from 'axios';
 import { FaPlus } from "react-icons/fa6";
 
 import { FaReceipt } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
 
 
 const Nav = () => {
+
     const { userData, currentCity } = useSelector(state => state.user)
     const { myShopData } = useSelector(state => state.owner)
-
+    
     const [showInfo, setShowInfo] = useState(false)
     const [showSearch, setShowSearch] = useState(false)
-
+    
     const dispatch = useDispatch()
+    const navigate=useNavigate()
 
     const handleLogOut = async () => {
         try {
@@ -95,7 +98,7 @@ const Nav = () => {
                             <>{
                                 myShopData &&
                                 <>
-                                    <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
+                                    <button onClick={()=>navigate("/add-item")} className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
                                         <FaPlus size={20} />
                                         <span>Add Food Item</span>
 
@@ -109,6 +112,8 @@ const Nav = () => {
                                 </>
                             }
 
+                            {
+                                userData.role=="user" &&
 
                                 <div className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
@@ -116,6 +121,11 @@ const Nav = () => {
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
 
                                 </div>
+                            }
+
+
+
+                                
                                 <div className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
@@ -152,10 +162,21 @@ const Nav = () => {
                         <div className=' fixed top-[80px] right-[10px] md:right-[10%] lg:right-[25%] 2-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]'>
 
                             <div className='text-[17px] font-semibold'>
-                                {userData.fullName}
+                                    {userData.fullName}
+                            </div>
+
+                            {userData.role=="user" &&
+                                <div className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
+
+                            
+                            
+                            }
+
+                            
+
+                                    
                                 <div className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
                                 <div onClick={handleLogOut} className='text-red-400 font-semibold cursor-pointer'>Log Out</div>
-                            </div>
 
                         </div>
                     }

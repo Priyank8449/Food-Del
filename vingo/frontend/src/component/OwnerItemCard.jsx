@@ -10,7 +10,7 @@ const OwnerItemCard = ({data}) => {
   return (
     <div className='flex bg-white rounded-lg shadow-md overflow-hidden border border-red-500 w-full max-w-2xl'>
 
-        <div className='w-36 h-full flex-shrink-0 bg-gray-50'>
+        <div className='w-36  flex-shrink-0 bg-gray-50'>
             <img src={data.image} alt="" className='w-full h-full object-cover' />
         </div>
 
