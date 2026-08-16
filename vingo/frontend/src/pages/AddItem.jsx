@@ -14,7 +14,7 @@ const AddItem = () => {
   const navigate = useNavigate()
 const dispatch=useDispatch()
 
-  const [name,setName]=useState(null)
+  const [name,setName]=useState("")
   const [price,setPrice]=useState(0)
 
   const[frontendImage,setFrontendImage]=useState(null)
@@ -133,7 +133,7 @@ navigate("/")
 
                     <option value="">Select Category </option>
                     {categories.map((cate,index)=>(
-                        <option value={cate} key="index"> {cate}</option>
+                        <option value={cate} key={index}> {cate}</option>
                     ))}
 
              </select>
@@ -143,7 +143,7 @@ navigate("/")
               Select Food Type
             </label>
 
-            <select onChange={(e)=>setCategory(e.target.value)} value={foodType} type="number" placeholder='Enter  Price ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' 
+            <select onChange={(e)=>setFoodType(e.target.value)} value={foodType} type="number" placeholder='Enter  Price ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' 
                 >
 
                     <option value ="veg">Veg </option>

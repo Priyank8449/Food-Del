@@ -5,6 +5,9 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export const addItem = async (req, res) => {
     try {
+        console.log("REQ.BODY:", req.body);
+        console.log("REQ.FILE:", req.file);
+        console.log("REQ.USER ID:", req.userId);
         const { name, category, foodType, price } = req.body
         let image;
         if(req.file) {
@@ -40,9 +43,13 @@ export const addItem = async (req, res) => {
 
 
     } catch (error) {
-        return res.status(500).json({ message: `add item  error ${error}` })
+    console.error("ADD ITEM ERROR:", error);
 
-    }
+    return res.status(500).json({
+        message: "Add item error",
+        error: error.message
+    });
+}
 }
 
 
@@ -127,6 +134,47 @@ export const deleteItem=async(req,res)=>{
 
     }catch(error){
         return res.status(500).json({message:"delete item error"})
+
+    }
+
+}
+
+
+
+export const getItemByCity=async(req,res)=>{
+
+    try{
+
+        const {city} = req.params;
+
+        if(!city){
+            return res.status(400).json({message:"city is required"})
+        }
+
+        const shops=await Shop.find({
+            city:{$regex:new RegExp(`^${city}$`, "i")}
+        }).populate('items')
+
+        if(!shops){
+            return res.status(400).json({message:"shops not found"})
+        }
+
+
+        const shopIds=shops.map((shop)=>shop._id);
+
+        const  items=await Item.find({
+            shop:{$in:shopIds}
+        })
+
+
+        return res.status(200).json(items)
+
+
+
+
+    }catch(error){
+                return res.status(500).json({message:" get item by city error"})
+
 
     }
 

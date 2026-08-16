@@ -7,7 +7,8 @@ import { createSlice } from "@reduxjs/toolkit";
         currentCity:null,
         currentState:null,
         currentAddress:null,
-        shopInMyCity:null
+        shopInMyCity:null,
+        itemsInMyCity:null
 
     },
     reducers:{
@@ -26,10 +27,13 @@ import { createSlice } from "@reduxjs/toolkit";
         setShopInMyCity:(state,action)=>{
             state.shopInMyCity=action.payload
         },
+        setItemsInMyCity:(state,action)=>{
+            state.itemsInMyCity=action.payload
+        },
     }
  })
 
 
- export const {setUserData,setCurrentCity,setCurrentState,setCurrentAddress,setShopInMyCity}=userSlice.actions
+ export const {setUserData,setCurrentCity,setCurrentState,setCurrentAddress,setShopInMyCity,setItemsInMyCity}=userSlice.actions
 
  export default userSlice.reducer
