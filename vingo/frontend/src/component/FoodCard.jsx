@@ -30,6 +30,21 @@ const FoodCard = ({ data }) => {
         return stars
     }
 
+    const  handleIncrease=()=>{
+        const  newQty=quantity+1;
+
+        setQuantity(newQty)
+    }
+    const  handleDecrease=()=>{
+
+        if(quantity>0){
+            const  newQty=quantity-1;
+        
+            setQuantity(newQty)
+
+        }
+    }
+
     return (
         <div className='w-[250px] rounded-2xl border-2 border-red-400 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col '>
 
@@ -65,13 +80,13 @@ const FoodCard = ({ data }) => {
 
                     <div className='flex items-center border rounded-full overflow-hidden shadow-sm'>
 
-                        <button className='px-2 py-1 hover:bg-gray-100 transition'><FaMinus size={12} /></button>
+                        <button onClick={handleDecrease} className='px-2 py-1 hover:bg-gray-100 transition'><FaMinus size={12} /></button>
 
                         <span>{quantity}</span>
 
-                        <button className='px-2 py-1 hover:bg-gray-100 transition'><FaPlus size={12} /></button>
+                        <button onClick={handleIncrease} className='px-2 py-1 hover:bg-gray-100 transition'><FaPlus size={12} /></button>
 
-                        <button className='bg-red-600 text-white px-3 py-2 transition-colors'><FaShoppingCart />
+                        <button className='bg-red-600 text-white px-3 py-2 transition-colors'><FaShoppingCart size={16} />
 </button>
                     </div>
                 </div>
