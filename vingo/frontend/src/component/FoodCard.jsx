@@ -7,6 +7,8 @@ import { FaMinus } from "react-icons/fa6";
 import { useState } from 'react';
 import { FaPlus } from "react-icons/fa6";
 import { FaShoppingCart } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/userSlice';
 
 
 
@@ -15,8 +17,10 @@ import { FaShoppingCart } from "react-icons/fa";
 
 
 const FoodCard = ({ data }) => {
+    const dispatch = useDispatch()
+    const {cartItems}=useSelector(state=>state.user)
 
-    const [quantity,setQuantity]=useState(0)
+    const [quantity, setQuantity] = useState(0)
 
     const renderStar = (rating) => {
         const stars = [];
@@ -30,16 +34,16 @@ const FoodCard = ({ data }) => {
         return stars
     }
 
-    const  handleIncrease=()=>{
-        const  newQty=quantity+1;
+    const handleIncrease = () => {
+        const newQty = quantity + 1;
 
         setQuantity(newQty)
     }
-    const  handleDecrease=()=>{
+    const handleDecrease = () => {
 
-        if(quantity>0){
-            const  newQty=quantity-1;
-        
+        if (quantity > 0) {
+            const newQty = quantity - 1;
+
             setQuantity(newQty)
 
         }
@@ -86,8 +90,22 @@ const FoodCard = ({ data }) => {
 
                         <button onClick={handleIncrease} className='px-2 py-1 hover:bg-gray-100 transition'><FaPlus size={12} /></button>
 
-                        <button className='bg-red-600 text-white px-3 py-2 transition-colors'><FaShoppingCart size={16} />
-</button>
+                        <button onClick={() => {
+
+                            quantity>0?
+                            dispatch(addToCart({
+                            id: data._id,
+                            name: data.name,
+                            price: data.price,
+                            image: data.image,
+                            shop: data.shop,
+                            quantity,
+                            foodType: data.foodType,
+                        }
+                        
+                        )):null
+                        }} className={`${cartItems.some(i=>i.id==data._id)?"bg-gray-800":"bg-orange-700"} text-white px-3 py-2 transition-colors`}><FaShoppingCart size={16} />
+                        </button>
                     </div>
                 </div>
 
