@@ -135,7 +135,7 @@ const Nav = () => {
                             </> :
                             (
                                 <>
-                                    <div className='relative cursor-pointer'>
+                                    <div className='relative cursor-pointer' onClick={()=>{navigate("/cart")}}>
                                         <FaShoppingCart size={25} className='text-red-800' />
                                         <span className='absolute right-[-9px] top-[-12px] font-bold text-red-600' >{cartItems.length}</span>
 
