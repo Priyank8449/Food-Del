@@ -3,22 +3,91 @@ import { IoMdArrowBack } from "react-icons/io";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoMdSearch } from "react-icons/io";
 import { TbCurrentLocation } from "react-icons/tb";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAddress, setLocation } from '../redux/mapSlice';
+import axios from 'axios';
 
 
+function ReCenterMap({ location }) {
+
+    if (location.latitude && location.longitude) {
+
+        const map = useMap();
+        map.setView([location.latitude, location.longitude], 16, { animate: true })
+    }
+    return null;
+
+}
 
 const CheckOut = () => {
 
+    const dispatch = useDispatch()
+    const apiKey = import.meta.env.VITE_GEOAPIKEY
+
     const { location, address } = useSelector(state => state.map)
+    const [addressInput, setAddressInput] = useState()
 
-    const[searchLocation,setSearchLocation]=useState("")
+    const onDragEnd = (e) => {
+        const { lat, lng } = e.target._latlng
+        dispatch(setLocation({ latitude: lat, longitude: lng }))
+        getAddressByLatLng(lat, lng)
+    }
 
-    useEffect(()=>{
+    const getAddressByLatLng = async (lat, lng) => {
+
+        try {
+
+            const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&format=json&apiKey=${apiKey}`)
+
+            dispatch(setAddress(result?.data?.results[0].address_line2))
+
+        } catch {
+
+        }
+
+    }
+
+
+    const getCurrentLocation = () => {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const latitude = position.coords.latitude
+            const longitude = position.coords.longitude
+            dispatch(setLocation({ latitude: latitude, longitude: longitude }))
+            getAddressByLatLng(latitude, longitude)
+
+        })
+
+    }
+
+
+    const getLatLngByAddress = async () => {
+
+        try {
+            const result = await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(addressInput)}&apiKey=${apiKey}`)
+
+            const{lat,lon}=result.data.features[0].properties
+            dispatch(setLocation({latitude:lat,longitude:lon}))
+
+        } catch {
+
+        }
+
+    }
+
+    useEffect(() => {
+        setAddressInput(address)
+
+    }, [address])
+
+
+    const [searchLocation, setSearchLocation] = useState("")
+
+    useEffect(() => {
         setSearchLocation(address)
 
-    },[address])
+    }, [address])
 
 
     return (
@@ -39,10 +108,10 @@ const CheckOut = () => {
                     </h2>
 
 
-                    <div className=' flex  gap-2 mb-3'>
-                        <input  value={address} className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500' type="text" placeholder='Enter your delivery address' />
-                        <button className='bg-red-500 hover:bg-red-700 text-white px-3 py-2 rounded-lg flex items-center justify-center'><IoMdSearch size={17} /></button>
-                        <button className='bg-blue-500 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center justify-center'><TbCurrentLocation size={17} /></button>
+                    < div className=' flex  gap-2 mb-3'>
+                        <input value={addressInput} onChange={(e)=>setAddressInput(e.target.value)} className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500' type="text" placeholder='Enter your delivery address' />
+                        <button onClick={getLatLngByAddress} className='bg-red-500 hover:bg-red-700 text-white px-3 py-2 rounded-lg flex items-center justify-center'><IoMdSearch size={17} /></button>
+                        <button onClick={getCurrentLocation} className='bg-blue-500 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center justify-center'><TbCurrentLocation size={17} /></button>
                     </div>
 
                     <div className='rounded-xl border overflow-hidden'>
@@ -61,7 +130,10 @@ const CheckOut = () => {
                                 >
 
                                 </TileLayer>
-                                <Marker position={[location?.latitude, location?.longitude]}>
+
+
+                                < ReCenterMap location={location} />
+                                <Marker position={[location?.latitude, location?.longitude]} draggable eventHandlers={{ dragend: onDragEnd }}>
                                     <Popup>
                                         Delivery Location
                                     </Popup>
