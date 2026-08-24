@@ -229,6 +229,9 @@ const CheckOut = () => {
 
 
                 </section>
+
+
+                <button className='w-full bg-red-600 hover:bg-red-800 text-white py-3 rounded-xl font-semibold '>{paymentMethod=="cod"?"Place Order":"Pay & Place Order"}</button>
             </div>
 
         </div>
