@@ -12,6 +12,7 @@ import { MdMobileFriendly } from "react-icons/md";
 import { FaCreditCard } from "react-icons/fa";
 import {useNavigate} from 'react-router-dom'
 import { MdDeliveryDining } from "react-icons/md";
+import { serverUrl } from '../App';
 
 
 function ReCenterMap({ location }) {
@@ -22,7 +23,6 @@ function ReCenterMap({ location }) {
         map.setView([location.latitude, location.longitude], 16, { animate: true })
     }
     return null;
-
 }
 
 const CheckOut = () => {
@@ -88,6 +88,27 @@ const CheckOut = () => {
 
         }
 
+    }
+
+    const handlePlaceOrder=async()=>{
+        try{
+            const  result= await axios.post(`${serverUrl}/api/order/place-order`,{
+                paymentMethod,
+                deliveryAddress:{
+                    text:addressInput,
+                    latitude:location.latitude,
+                    longitude:location.longitude
+                },
+                totalAmount,
+                cartItems
+            },{withCredentials:true})
+
+            console.log(result.data)
+
+        }catch(error){
+            console.log(error)
+
+        }
     }
 
     useEffect(() => {
@@ -231,7 +252,7 @@ const CheckOut = () => {
                 </section>
 
 
-                <button className='w-full bg-red-600 hover:bg-red-800 text-white py-3 rounded-xl font-semibold '>{paymentMethod=="cod"?"Place Order":"Pay & Place Order"}</button>
+                <button onClick={handlePlaceOrder} className='w-full bg-red-500 hover:bg-red-800 text-white py-3 rounded-xl font-semibold shadow-2xl shadow-black'>{paymentMethod=="cod"?"Place Order":"Pay & Place Order"}</button>
             </div>
 
         </div>
