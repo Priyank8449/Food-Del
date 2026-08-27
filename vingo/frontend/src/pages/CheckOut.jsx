@@ -35,7 +35,7 @@ const CheckOut = () => {
     const { location, address} = useSelector(state => state.map)
     const { cartItems ,totalAmount} = useSelector(state => state.user)
 
-    const [addressInput, setAddressInput] = useState()
+    const [addressInput, setAddressInput] = useState("")
     const [paymentMethod, setPaymentMethod] = useState("cod")
 
 
@@ -104,6 +104,7 @@ const CheckOut = () => {
             },{withCredentials:true})
 
             console.log(result.data)
+            navigate("/order-placed")
 
         }catch(error){
             console.log(error)
