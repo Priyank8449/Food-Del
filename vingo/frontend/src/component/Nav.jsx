@@ -112,21 +112,20 @@ const Nav = () => {
                                 </>
                             }
 
-                            {
-                                userData.role=="user" &&
+                            
 
-                                <div className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
+                                <div onClick={()=>navigate("/my-order")} className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
                                     <span>My Orders</span>
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
 
                                 </div>
-                            }
+                            
 
 
 
                                 
-                                <div className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
+                                <div onClick={()=>navigate("/my-order")} className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
 
@@ -143,7 +142,7 @@ const Nav = () => {
 
 
 
-                                    <button className='hidden md:block px-3 py-1 rounded-lg bg-red-500/30  backdrop-blur-2xl text-red-600  text-sm font-medium'> My Order</button>
+                                    <button onClick={()=>navigate("/my-order")} className='hidden md:block px-3 py-1 rounded-lg bg-red-500/30  backdrop-blur-2xl text-red-600  text-sm font-medium'> My Order</button>
 
 
 
@@ -166,7 +165,7 @@ const Nav = () => {
                             </div>
 
                             {userData.role=="user" &&
-                                <div className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
+                                <div onClick={()=>navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
 
                             
                             
@@ -175,7 +174,7 @@ const Nav = () => {
                             
 
                                     
-                                <div className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
+                                <div onClick={()=>navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
                                 <div onClick={handleLogOut} className='text-red-400 font-semibold cursor-pointer'>Log Out</div>
 
                         </div>
