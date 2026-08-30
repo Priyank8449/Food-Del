@@ -58,7 +58,7 @@ const orderSchema=new mongoose.Schema({
     deliveryAddress:{
         text:String,
         latitude:Number,
-        longitutde:Number
+        longitude:Number
     },
 
     totalAmount:{
