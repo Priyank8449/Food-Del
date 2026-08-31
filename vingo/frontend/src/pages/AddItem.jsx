@@ -114,7 +114,7 @@ navigate("/")
                Name
             </label>
 
-            <input onChange={(e)=>setName(e.target.value)}  type="text" placeholder='Enter Shop Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
+            <input onChange={(e)=>setName(e.target.value)}  type="text" placeholder='Enter Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
           </div>
           <div>
             <label className=" block text-sm font-medium text-gray-700 mb-1">

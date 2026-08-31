@@ -13,6 +13,7 @@ import { FaCreditCard } from "react-icons/fa";
 import {useNavigate} from 'react-router-dom'
 import { MdDeliveryDining } from "react-icons/md";
 import { serverUrl } from '../App';
+import { addMyOrder } from '../redux/userSlice';
 
 
 function ReCenterMap({ location }) {
@@ -39,7 +40,7 @@ const CheckOut = () => {
     const [paymentMethod, setPaymentMethod] = useState("cod")
 
 
-    const deliveryFee=totalAmount>500?0:40
+    const deliveryFee=totalAmount>200?0:40
     const amountWithDeliveryFee=totalAmount+deliveryFee
 
 
@@ -102,8 +103,8 @@ const CheckOut = () => {
                 totalAmount,
                 cartItems
             },{withCredentials:true})
+            dispatch(addMyOrder(result.data))
 
-            console.log(result.data)
             navigate("/order-placed")
 
         }catch(error){
