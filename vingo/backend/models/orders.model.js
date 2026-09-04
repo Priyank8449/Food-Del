@@ -41,6 +41,11 @@ const shopOrderSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"DeliveryAssignment",
         default:null
+    },
+
+    assignedDeliveryBoy:{
+         type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
     }
 
 

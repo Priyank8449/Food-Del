@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MdCall } from "react-icons/md";
 import { serverUrl } from '../App';
 import { useDispatch } from 'react-redux';
@@ -7,6 +7,9 @@ import axios from 'axios';
 
 
 const OwnerOrderCard = ({ data }) => {
+
+
+  const [availableBoys,setAvailableBoys]=useState([])
   const  dispatch=useDispatch()
 
   
@@ -18,12 +21,14 @@ const OwnerOrderCard = ({ data }) => {
 
       console.log(result)
       dispatch(updateOrderStatus({orderId,shopId,status}))
+      setAvailableBoys(result.data.availableBoys)
+      console.log(result.data)
 
     }
     catch(error){
-      console.log(error)
-
-    }
+    console.log("UPDATE STATUS ERROR:", error);
+    console.log("SERVER RESPONSE:", error.response?.data);
+}
     
   }
   return (

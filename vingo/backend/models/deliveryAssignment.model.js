@@ -31,8 +31,8 @@ const deliveryAssignmentSchema=new mongoose.Schema({
 
     status:{
         type:String,
-        enum:["broadCasted","assigned","expired"],
-        default:"broadCasted"
+        enum:["broadcasted","assigned","expired"],
+        default:"broadcasted"
     },
 
     acceptedAt:Date,
