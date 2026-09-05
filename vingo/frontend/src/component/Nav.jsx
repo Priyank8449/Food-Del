@@ -134,11 +134,13 @@ const Nav = () => {
                             </> :
                             (
                                 <>
+                                    {userData.role=='user'&&
                                     <div className='relative cursor-pointer' onClick={()=>{navigate("/cart")}}>
                                         <FaShoppingCart size={25} className='text-red-800' />
                                         <span className='absolute right-[-9px] top-[-12px] font-bold text-red-600' >{cartItems.length}</span>
 
                                     </div>
+                                    }
 
 
 
@@ -158,7 +160,7 @@ const Nav = () => {
 
                     {showInfo &&
 
-                        <div className=' fixed top-[80px] right-[10px] md:right-[10%] lg:right-[25%] 2-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]'>
+                        <div className={`fixed top-[80px] right-[10px] ${userData.role=="deliveryBoy"?"md:right-[20%] lg:right-[30%]":"md:right-[10%] lg:right-[25%]" }  w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]`}>
 
                             <div className='text-[17px] font-semibold'>
                                     {userData.fullName}
@@ -169,11 +171,8 @@ const Nav = () => {
 
                             
                             
-                            }
+                            }     
 
-                            
-
-                                    
                                 <div onClick={()=>navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
                                 <div onClick={handleLogOut} className='text-red-400 font-semibold cursor-pointer'>Log Out</div>
 
