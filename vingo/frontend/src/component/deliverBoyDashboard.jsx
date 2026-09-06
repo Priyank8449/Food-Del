@@ -1,11 +1,33 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Nav from './Nav'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
+import { serverUrl } from '../App'
 const DeliverBoyDashboard = () => {
 
 
   const {userData} = useSelector(state=>state.user)
+
+
+  const getAssignment=async()=>{
+    try{
+
+      const  result= await axios.get(`${serverUrl}/api/order/get-assignments`,{withCredentials:true})
+      console.log(result.data)
+
+    }
+    catch(error){
+
+      console.log(error)
+
+    }
+  }
+
+
+  useEffect(()=>{
+    getAssignment()
+  },[userData])
   return (
     <div className='w-full min-h-screen flex flex-col items-center overflow-x-hidden'>
       <Nav/>

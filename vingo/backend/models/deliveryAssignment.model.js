@@ -16,7 +16,7 @@ const deliveryAssignmentSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         required:true
     },
-    broadCastedTo:[
+    broadcastedTo:[
         {
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"

@@ -152,16 +152,22 @@ export const updateOrderStatus=async(req,res)=>{
         if(status=="out for delivery" && !shopOrder.assignment){
 
             const{longitude,latitude}=order.deliveryAddress;
+console.log("ORDER LOCATION:");
+console.log("Longitude:", longitude);
+console.log("Latitude:", latitude);
 
+console.log("DELIVERY BOYS:");
             const nearByDeliverBoys=await User.find({
                 role:"deliveryBoy",
                 location:{
                     $near:{
                         $geometry:{type:"Point",coordinates:[Number(longitude),Number(latitude)]},
-                        $maxDistance:5000 //meter
+                        $maxDistance:50000 //meter
                     }
                 }
             })
+            console.log("NEARBY DELIVERY BOYS:", nearByDeliverBoys);
+console.log("NEARBY COUNT:", nearByDeliverBoys.length);
 
             const nearByIds=nearByDeliverBoys.map(b=>b._id);
 
@@ -175,6 +181,9 @@ export const updateOrderStatus=async(req,res)=>{
 
 
              const availableBoys=nearByDeliverBoys.filter(b=>!busyIdSet.has(String(b._id)))
+             console.log("BUSY IDS:", busyIds);
+console.log("AVAILABLE BOYS:", availableBoys);
+console.log("AVAILABLE COUNT:", availableBoys.length);
 
 
              const  candidates=availableBoys.map(b=>b._id)
@@ -242,4 +251,42 @@ export const updateOrderStatus=async(req,res)=>{
         error: error.message
     });
 }
+}
+
+
+
+
+export const getDeliveryBoyAssignment=async(req,res)=>{
+
+    try{
+        const  deliveryBoyId=req.userId;
+        const assignment=await DeliveryAssignment.find({
+            broadcastedTo:deliveryBoyId,
+            status:"broadcasted"
+        }).populate("order")
+        .populate("shop")
+
+
+
+        const  formated=assignment.map(a=>({
+            assignmentId:a._id,
+            orderId:a.order._id,
+            shopName:a.shop.name,
+            deliveryAddress:a.order.deliveryAddress,
+            items:a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId)).shopOrderItems ||[],
+            subtotal:a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId))?.subtotal
+        }))
+
+
+        return res.status(200).json(formated)
+
+    }catch(error){
+        return res.status(500).json({
+        message: "get assignment  err",
+        error: error.message
+    })
+
+    }
+
+
 }
