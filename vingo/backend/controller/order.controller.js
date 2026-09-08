@@ -64,8 +64,8 @@ export const placeOrder = async (req, res) => {
             shopOrders
         })
 
-       await  newOrder.populate("shopOrders.shopOrderItems.item","name image price")
-       await newOrder.populate("shopOrders.shop","name")
+        await newOrder.populate("shopOrders.shopOrderItems.item", "name image price")
+        await newOrder.populate("shopOrders.shop", "name")
 
         return res.status(201).json(newOrder)
 
@@ -82,7 +82,7 @@ export const placeOrder = async (req, res) => {
 export const getMyOrders = async (req, res) => {
 
     try {
-        const user = await  User.findById(req.userId)
+        const user = await User.findById(req.userId)
         if (user.role == "user") {
             const orders = await Order.find({ user: req.userId })
                 .sort({ createAt: -1 })
@@ -101,14 +101,14 @@ export const getMyOrders = async (req, res) => {
                 .populate("user")
                 .populate("shopOrders.shopOrderItems.item", "name image price")
 
-               const  filteredOrders=orders.map((order=>({
-                _id:order._id,
-                paymentMethod:order.paymentMethod,
-                user:order.user,
-                shopOrders:order.shopOrders.find(o=>o.owner._id==req.userId),
-                createAt:order.createdAt,
-                deliveryAddress:order.deliveryAddress
-               })))
+            const filteredOrders = orders.map((order => ({
+                _id: order._id,
+                paymentMethod: order.paymentMethod,
+                user: order.user,
+                shopOrders: order.shopOrders.find(o => o.owner._id == req.userId),
+                createAt: order.createdAt,
+                deliveryAddress: order.deliveryAddress
+            })))
 
             return res.status(200).json(filteredOrders)
 
@@ -128,94 +128,94 @@ export const getMyOrders = async (req, res) => {
 
 
 
-export const updateOrderStatus=async(req,res)=>{
-    try{
-        const{orderId,shopId}=req.params
+export const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId, shopId } = req.params
 
-        const {status}=req.body;
+        const { status } = req.body;
 
-        const order=await Order.findById(orderId)
+        const order = await Order.findById(orderId)
 
-        const shopOrder=order.shopOrders.find(o=>o.shop==shopId)
-        if(!shopOrder){
-            return res.status(400).json({message:"shop order  not found"})
-           
-            
+        const shopOrder = order.shopOrders.find(o => o.shop == shopId)
+        if (!shopOrder) {
+            return res.status(400).json({ message: "shop order  not found" })
+
+
         }
 
-        shopOrder.status=status;
+        shopOrder.status = status;
 
 
-        let deliveryBoysPayload=[]
+        let deliveryBoysPayload = []
 
 
-        if(status=="out for delivery" && !shopOrder.assignment){
+        if (status == "out for delivery" && !shopOrder.assignment) {
 
-            const{longitude,latitude}=order.deliveryAddress;
-console.log("ORDER LOCATION:");
-console.log("Longitude:", longitude);
-console.log("Latitude:", latitude);
+            const { longitude, latitude } = order.deliveryAddress;
+            console.log("ORDER LOCATION:");
+            console.log("Longitude:", longitude);
+            console.log("Latitude:", latitude);
 
-console.log("DELIVERY BOYS:");
-            const nearByDeliverBoys=await User.find({
-                role:"deliveryBoy",
-                location:{
-                    $near:{
-                        $geometry:{type:"Point",coordinates:[Number(longitude),Number(latitude)]},
-                        $maxDistance:50000 //meter
+            console.log("DELIVERY BOYS:");
+            const nearByDeliverBoys = await User.find({
+                role: "deliveryBoy",
+                location: {
+                    $near: {
+                        $geometry: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
+                        $maxDistance: 50000 //meter
                     }
                 }
             })
             console.log("NEARBY DELIVERY BOYS:", nearByDeliverBoys);
-console.log("NEARBY COUNT:", nearByDeliverBoys.length);
+            console.log("NEARBY COUNT:", nearByDeliverBoys.length);
 
-            const nearByIds=nearByDeliverBoys.map(b=>b._id);
+            const nearByIds = nearByDeliverBoys.map(b => b._id);
 
-            const busyIds=await DeliveryAssignment.find({
-                assignedTo:{$in:nearByIds},
-                status:{$nin:["broadcasted","completed"]}
+            const busyIds = await DeliveryAssignment.find({
+                assignedTo: { $in: nearByIds },
+                status: { $nin: ["broadcasted", "completed"] }
             }).distinct("assignedTo")
 
 
-            const busyIdSet=new Set(busyIds.map(id=>String(id)))
+            const busyIdSet = new Set(busyIds.map(id => String(id)))
 
 
-             const availableBoys=nearByDeliverBoys.filter(b=>!busyIdSet.has(String(b._id)))
-             console.log("BUSY IDS:", busyIds);
-console.log("AVAILABLE BOYS:", availableBoys);
-console.log("AVAILABLE COUNT:", availableBoys.length);
+            const availableBoys = nearByDeliverBoys.filter(b => !busyIdSet.has(String(b._id)))
+            console.log("BUSY IDS:", busyIds);
+            console.log("AVAILABLE BOYS:", availableBoys);
+            console.log("AVAILABLE COUNT:", availableBoys.length);
 
 
-             const  candidates=availableBoys.map(b=>b._id)
+            const candidates = availableBoys.map(b => b._id)
 
 
-             if(candidates.length==0){
+            if (candidates.length == 0) {
                 await order.save()
                 return res.json({
-                    message:" order completed but no available delivery  boys"
+                    message: " order completed but no available delivery  boys"
                 })
-             }
-             const  deliveryAssignment=await DeliveryAssignment.create({
+            }
+            const deliveryAssignment = await DeliveryAssignment.create({
 
-                order:order._id,
-                shop:shopOrder.shop,
-                shopOrderId:shopOrder._id,
-                broadcastedTo:candidates,
-                status:"broadcasted"
+                order: order._id,
+                shop: shopOrder.shop,
+                shopOrderId: shopOrder._id,
+                broadcastedTo: candidates,
+                status: "broadcasted"
 
 
-             })
+            })
 
-             shopOrder.assignedDeliveryBoy=deliveryAssignment.assignedTo
+            shopOrder.assignedDeliveryBoy = deliveryAssignment.assignedTo
 
-             shopOrder.assignment=deliveryAssignment._id
+            shopOrder.assignment = deliveryAssignment._id
 
-             deliveryBoysPayload=availableBoys.map(b=>({
-                id:b._id,
-                fullName:b.fullName,
-                longitude:b.location.coordinates?.[0],
-                latitude:b.location.coordinates?.[1],
-                mobile:b.mobile
+            deliveryBoysPayload = availableBoys.map(b => ({
+                id: b._id,
+                fullName: b.fullName,
+                longitude: b.location.coordinates?.[0],
+                latitude: b.location.coordinates?.[1],
+                mobile: b.mobile
 
 
             }))
@@ -224,67 +224,68 @@ console.log("AVAILABLE COUNT:", availableBoys.length);
 
         }
 
-        
+
         await shopOrder.save()
         await order.save()
 
-        await order.populate("shopOrders.shop","name  ")
-        await order.populate("shopOrders.assignedDeliveryBoy","fullName email mobile  ")
+        await order.populate("shopOrders.shop", "name  ")
+        await order.populate("shopOrders.assignedDeliveryBoy", "fullName email mobile  ")
 
-        const updatedShopOrder=order.shopOrders.find(o=>o.shop==shopId)
+        const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId)
 
 
 
         return res.status(200).json({
-            shopOrder:updatedShopOrder,
-            assignedDeliveryBoy:updatedShopOrder?.assignedDeliveryBoy,
-            availableBoys:deliveryBoysPayload,
-            assignment:updatedShopOrder?.assignment._id
+            shopOrder: updatedShopOrder,
+            assignedDeliveryBoy: updatedShopOrder?.assignedDeliveryBoy,
+            availableBoys: deliveryBoysPayload,
+            assignment: updatedShopOrder?.assignment._id
 
         })
 
-    }catch (error) {
-    console.error("UPDATE ORDER STATUS ERROR:", error);
+    } catch (error) {
+        console.error("UPDATE ORDER STATUS ERROR:", error);
 
-    return res.status(500).json({
-        message: "order status err",
-        error: error.message
-    });
+        return res.status(500).json({
+            message: "order status err",
+            error: error.message
+        });
+    }
 }
-}
 
 
 
 
-export const getDeliveryBoyAssignment=async(req,res)=>{
+export const getDeliveryBoyAssignment = async (req, res) => {
 
-    try{
-        const  deliveryBoyId=req.userId;
-        const assignment=await DeliveryAssignment.find({
-            broadcastedTo:deliveryBoyId,
-            status:"broadcasted"
+    try {
+        const deliveryBoyId = req.userId;
+        const assignment = await DeliveryAssignment.find({
+            broadcastedTo: deliveryBoyId,
+            status: "broadcasted"
         }).populate("order")
-        .populate("shop")
+            .populate("shop")
 
 
 
-        const  formated=assignment.map(a=>({
-            assignmentId:a._id,
-            orderId:a.order._id,
-            shopName:a.shop.name,
-            deliveryAddress:a.order.deliveryAddress,
-            items:a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId)).shopOrderItems ||[],
-            subtotal:a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId))?.subtotal
+        const formated = assignment.map(a => ({
+            assignmentId: a._id,
+            orderId: a.order._id,
+            shopName: a.shop.name,
+            deliveryAddress: a.order.deliveryAddress,
+            items: a.order.shopOrders.find(so => so._id.equals(a.shopOrderId)).shopOrderItems || [],
+            subtotal: a.order.shopOrders.find(so => so._id.equals(a.shopOrderId))?.subtotal
         }))
 
 
         return res.status(200).json(formated)
 
-    }catch(error){
+
+    } catch (error) {
         return res.status(500).json({
-        message: "get assignment  err",
-        error: error.message
-    })
+            message: "get assignment  err",
+            error: error.message
+        })
 
     }
 

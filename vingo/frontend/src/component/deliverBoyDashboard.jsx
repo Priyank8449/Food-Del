@@ -4,16 +4,19 @@ import Nav from './Nav'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { serverUrl } from '../App'
+import { useState } from 'react'
 const DeliverBoyDashboard = () => {
 
 
   const {userData} = useSelector(state=>state.user)
+  const [availabeAssignment,setAvailableAssignment]=useState([])
 
 
   const getAssignment=async()=>{
     try{
 
       const  result= await axios.get(`${serverUrl}/api/order/get-assignments`,{withCredentials:true})
+      setAvailableAssignment(result.data)
       console.log(result.data)
 
     }
@@ -41,6 +44,40 @@ const DeliverBoyDashboard = () => {
       <h1 className='text-xl font-bold text-red-500' >Welcome, {userData.fullName}</h1>
       <p className='text-red-400' > <span className='font-semibold'>Latitude</span>:{userData.location.coordinates[1]},<span  className='font-semibold'> Longitude</span>:{userData.location.coordinates[0]}</p>
 
+
+    </div>
+
+
+    <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] borde border-orange-300' >
+
+      <h2 className='text-lg font-bold mb-4 flex items-center gap-2'>Available Orders</h2>
+
+      <div className='space-y-4'>
+
+        {availabeAssignment.length>0?
+        (
+          availabeAssignment.map((a,index)=>(
+
+            <div className='border rounded-lg p-4 flex justify-between items-center ' key={index}>
+
+              <div>
+                <p className=' text-sm font-semibold'>{a.shopName}</p>
+                <p className='text-gray-500 text-sm'><span className='font-semibold'>Delivery Address:</span>{a.deliveryAddress.text}</p>
+                <p className=' text-xs text-gray-400'>{a.items.length} items | ₹{a.subtotal}</p>
+              </div>
+              <button className=' text-white bg-red-400 px-4 py-1 rounded-lg text-sm hover:bg-red-500'>Accept</button>
+
+
+
+            </div>
+            
+          ))
+        ):
+        <p className='text-gray-600 text-sm'> No Available Orders</p>
+        
+      }
+
+      </div>
 
     </div>
 
