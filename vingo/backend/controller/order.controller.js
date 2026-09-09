@@ -291,3 +291,58 @@ export const getDeliveryBoyAssignment = async (req, res) => {
 
 
 }
+
+
+export const acceptOrder=async (req,res)=>{
+    try{
+
+        const {assignmentId}=req.params;
+
+        const assignment=await DeliveryAssignment.findById(assignmentId)
+
+        if(!assignment){
+            return res.status(400).json({message:"assignment not found"})
+        }
+        
+        if(assignment.status!=="broadcasted"){
+            return res.status(400).json({message:"assignment  is expired"})
+            
+        }
+        const  allreadyAssigned=await DeliveryAssignment.findOne({
+            assignedTo:req.userId,
+            status:{$nin:["broadcasted","completed"]}
+        })
+        
+        if(allreadyAssigned){
+            return res.status(400).json({message:"you are allready assigned to  an order"})
+            
+        }
+        
+        assignment.assignedTo=req.userId,
+        assignment.status="assigned",
+        assignment.acceptedAt=new Date()
+        
+        await assignment.save()
+        
+        
+        const order=await Order.findById(assignment.order)
+        
+        if(!order){
+            return res.status(400).json({message:"order not found"})
+
+        }
+
+        const shopOrder=order.shopOrders.find(so=>so._id==assignment.shopOrderId)
+        shopOrder.assignedDeliveryBoy=req.userId
+
+        await order.save()
+        await order.populate("shopOrders.assignedDeliveryBoy")
+
+
+
+
+    }
+    catch{
+
+    }
+}
