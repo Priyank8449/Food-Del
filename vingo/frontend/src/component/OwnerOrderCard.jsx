@@ -9,27 +9,27 @@ import axios from 'axios';
 const OwnerOrderCard = ({ data }) => {
 
 
-  const [availableBoys,setAvailableBoys]=useState([])
-  const  dispatch=useDispatch()
-
-  
+  const [availableBoys, setAvailableBoys] = useState([])
+  const dispatch = useDispatch()
 
 
-  const  handleUpdateStatus=async(orderId,shopId,status)=>{
-    try{
-      const  result =await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`,{status},{withCredentials:true})
+
+
+  const handleUpdateStatus = async (orderId, shopId, status) => {
+    try {
+      const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, { status }, { withCredentials: true })
 
       console.log(result)
-      dispatch(updateOrderStatus({orderId,shopId,status}))
+      dispatch(updateOrderStatus({ orderId, shopId, status }))
       setAvailableBoys(result.data.availableBoys)
       console.log(result.data)
 
     }
-    catch(error){
-    console.log("UPDATE STATUS ERROR:", error);
-    console.log("SERVER RESPONSE:", error.response?.data);
-}
-    
+    catch (error) {
+      console.log("UPDATE STATUS ERROR:", error);
+      console.log("SERVER RESPONSE:", error.response?.data);
+    }
+
   }
   return (
     <div className='bg-white rounded-2xl shadow-2xl  p-4 space-y-4'>
@@ -65,8 +65,8 @@ const OwnerOrderCard = ({ data }) => {
       <div className='flex justify-between items-center mt-auto pt-3 border-t border-gray-100'>
         <span className='text-sm'>Status: <span className='font-semibold capitalize text-red-500'>{data.shopOrders.status}</span></span>
 
-        <select onChange={(e)=>handleUpdateStatus(data._id,data.shopOrders.shop._id,e.target.value)}
-        className='rounded-md border text-red-400 border-red-400 px-3 py-1 text-sm focus:outline-none focus:ring-2' >
+        <select onChange={(e) => handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}
+          className='rounded-md border text-red-400 border-red-400 px-3 py-1 text-sm focus:outline-none focus:ring-2' >
           <option value="">change</option>
           <option value="pending">Pending</option>
           <option value="preparing">Preparing</option>
@@ -75,27 +75,32 @@ const OwnerOrderCard = ({ data }) => {
       </div>
 
 
-      {data.shopOrders.status=="out for delivery"&&
-      
-      <div className=' mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
+      {data.shopOrders.status == "out for delivery" &&
 
-        <p>Available delivery boys- </p>
-        {availableBoys.length>0?(
+        <div className=' mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
 
-          availableBoys.map((b,index)=>(
-            <div className='text-gray-700'>
-              {b.fullName}-{b.mobile}
-            </div>
+          {data.shopOrders.assignedDeliveryBoy?<p>Assigned delivery boys- </p>:<p>Available delivery boys- </p>}
+          {availableBoys.length > 0 ? (
 
-          ))
+            availableBoys.map((b, index) => (
+              <div className='text-gray-700'>
+                {b.fullName}-{b.mobile}
+              </div>
 
-
-
-        ):
-        <div> waiting for  delivery boy to accept</div>}
+            ))
 
 
-      </div>
+
+          ) : data.shopOrders.assignedDeliveryBoy ?
+            <div>
+              {data.shopOrders.assignedDeliveryBoy.fullName}-
+              {data.shopOrders.assignedDeliveryBoy.mobile}
+
+            </div> :
+            <div> waiting for  delivery boy to accept</div>}
+
+
+        </div>
       }
 
       <div className='text-right font-bold text-gray-800 text-sm'>
