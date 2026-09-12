@@ -6,6 +6,7 @@ import axios from 'axios'
 import { serverUrl } from '../App'
 import { useState } from 'react'
 import { current } from '@reduxjs/toolkit'
+import DeliveryBoyTracking from './deliveryBoyTracking'
 const DeliverBoyDashboard = () => {
 
 
@@ -116,6 +117,22 @@ const DeliverBoyDashboard = () => {
 
           </div>
 
+        }
+
+        {currentOrder && 
+        <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-200'>
+
+          <h2 className='text-lg font-bold mb-3'>📦Current Order</h2>
+          <div className='border rounded-lg p-4 mb-3'>
+            <p className='font-semibold text-sm'>{currentOrder?.shopOrder.shop.name}</p>
+            <p className='text-sm text-gray-800'>{currentOrder?.deliveryAddress.text}</p>
+            <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length}items | {currentOrder.shopOrder.subtotal}</p>
+          </div>
+
+          <DeliveryBoyTracking data={currentOrder}/>
+
+
+        </div>
         }
 
 
