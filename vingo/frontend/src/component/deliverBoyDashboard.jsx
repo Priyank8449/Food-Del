@@ -14,6 +14,8 @@ const DeliverBoyDashboard = () => {
   const [currentOrder, setCurrentOrder] = useState()
   const [availabeAssignment, setAvailableAssignment] = useState([])
 
+  const [showOtpBox, setShowOtpBox] = useState(false)
+
 
   const getAssignment = async () => {
     try {
@@ -58,6 +60,14 @@ const DeliverBoyDashboard = () => {
 
     }
   }
+
+
+  const  handleSendOtp=()=>{
+    setShowOtpBox(true);
+
+  }
+
+
 
 
   useEffect(() => {
@@ -119,27 +129,44 @@ const DeliverBoyDashboard = () => {
 
         }
 
-        {currentOrder && 
-        <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-200'>
+        {currentOrder &&
+          <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-200'>
 
-          <h2 className='text-lg font-bold mb-3'>📦Current Order</h2>
-          <div className='border rounded-lg p-4 mb-3'>
-            <p className='font-semibold text-sm'>{currentOrder?.shopOrder.shop.name}</p>
-            <p className='text-sm text-gray-800'>{currentOrder?.deliveryAddress.text}</p>
-            <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length}items | {currentOrder.shopOrder.subtotal}</p>
-          </div>
+            <h2 className='text-lg font-bold mb-3'>📦Current Order</h2>
+            <div className='border rounded-lg p-4 mb-3'>
+              <p className='font-semibold text-sm'>{currentOrder?.shopOrder.shop.name}</p>
+              <p className='text-sm text-gray-800'>{currentOrder?.deliveryAddress.text}</p>
+              <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length}items | {currentOrder.shopOrder.subtotal}</p>
+            </div>
 
-          <DeliveryBoyTracking data={currentOrder}/>
+            <DeliveryBoyTracking data={currentOrder} />
+
+            {!showOtpBox ?
+
+              <button onClick={handleSendOtp} className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200'>Mark as Delivered</button>
+              :
+              <div className='mt-4 p-4 border rounded-xl bg-gray-100'>
+
+                <p className='text-sm font-semibold mb-2'>Enter Otp sent to <span className='text-blue-600 font-bold'>{currentOrder.user.fullName}</span></p>
+                <input type="text"  className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter Otp-XXXX' />
+                <button className=' w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition-all'>Submit Otp</button>
 
 
-        </div>
+              </div>
+          
+        
         }
 
 
 
-      </div>
+              </div>
+        }
+
+
+
+              </div>
     </div>
   )
 }
 
-export default DeliverBoyDashboard
+        export default DeliverBoyDashboard
