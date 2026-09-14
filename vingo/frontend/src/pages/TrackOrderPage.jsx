@@ -4,6 +4,7 @@ import { serverUrl } from '../App'
 import axios from 'axios'
 import { IoMdArrowBack } from "react-icons/io";
 import { current } from '@reduxjs/toolkit';
+import DeliveryBoyTracking from '../component/deliveryBoyTracking';
 
 const TrackOrderPage = () => {
 
@@ -15,6 +16,7 @@ const TrackOrderPage = () => {
 
 
     const handleGetOrder = async () => {
+
 
         try {
 
@@ -55,15 +57,57 @@ const TrackOrderPage = () => {
                     <div>
                         <p className='text-lg font-bold mb-2 text-red-500'>{shopOrder.shop.name}</p>
                         <p className=''><span className='font-semibold'>Items:</span>{shopOrder.shopOrderItems?.map(i=>i.name).join(",")}</p>
-                    </div>
                     
                     <p><span className='font-semibold'>Subtotal:</span>{shopOrder.subtotal}</p>
 
                     <p><span className='font-semibold'>Delivery Address:</span>{currentOrder.deliveryAddress.text}</p>
+                    </div>
+
+                    {shopOrder.status!="delivered"?<>
+
+                    {shopOrder.assignedDeliveryBoy?
+                    <div className='text-sm text-gray-700'>
+                        <p className='font-semibold'><span>Delivery Boy Name: </span>{shopOrder.assignedDeliveryBoy.fullName}</p>
+                        <p className='font-semibold'><span>Delivery Boy Contact No : </span>{shopOrder.assignedDeliveryBoy.mobile}</p>
+
+
+                    </div>:
+                    <p className='font-semibold'>Delivery Boy  is not assigned yet</p>
+                    
+                    }
+                    
+                    </>:
+                    <p className='text-green-500 font-semibold text-lg'>Delivered</p>}
+
+
+<div></div>
+
+                    {shopOrder.assignedDeliveryBoy&&
+
+                    <div className='h-[400px] w-full rounded-2xl overflow-hidden shadow-md'>
+
+
+                    <DeliveryBoyTracking data={{
+                        deliveryBoyLocation:{
+                            lat:shopOrder.assignedDeliveryBoy.location.coordinates[1],
+                            lon:shopOrder.assignedDeliveryBoy.location.coordinates[0],
+                    },
+                    customerLocation:{
+                        lat:currentOrder.deliveryAddress.latitude,
+                        lon:currentOrder.deliveryAddress.longitude
+                    }
+                    }}
+                    
+                    />
+                    </div>
+                    }
 
 
                 </div>
             ))}
+
+
+            
 
 
 
