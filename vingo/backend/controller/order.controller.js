@@ -2,6 +2,7 @@ import DeliveryAssignment from "../models/deliveryAssignment.model.js";
 import Order from "../models/orders.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
+import { sendDeliveryOtpMail } from "../utils/mail.js";
 
 
 
@@ -401,10 +402,10 @@ export const getCurrentOrder = async (req, res) => {
         }
 
         return res.status(200).json({
-            _id:assignment.order._id,
-            user:assignment.order.user,
+            _id: assignment.order._id,
+            user: assignment.order.user,
             shopOrder,
-            deliveryAddress:assignment.order.deliveryAddress,
+            deliveryAddress: assignment.order.deliveryAddress,
             deliveryBoyLocation,
             customerLocation
         })
@@ -413,7 +414,7 @@ export const getCurrentOrder = async (req, res) => {
 
 
     } catch (error) {
-                    return res.status(500).json({ message: `current order error ${error} `})
+        return res.status(500).json({ message: `current order error ${error} ` })
 
 
 
@@ -422,44 +423,119 @@ export const getCurrentOrder = async (req, res) => {
 }
 
 
-export const getOrderById=async(req,res)=>{
+export const getOrderById = async (req, res) => {
 
-    try{
+    try {
 
-        const {orderId}=req.params
-        const order=await Order.findById(orderId)
-        .populate("user" )
-        .populate({
-            path:"shopOrders.shop",
-            model:"Shop",
-            
-        })
-        .populate({
-            path:"shopOrders.assignedDeliveryBoy",
-            model:"User",
-            
-        })
-        .populate({
-            path:"shopOrders.shopOrderItems",
-            model:"Item",
-        })
-        .lean()
+        const { orderId } = req.params
+        const order = await Order.findById(orderId)
+            .populate("user")
+            .populate({
+                path: "shopOrders.shop",
+                model: "Shop",
 
-        if(!order){
-            return  res.status(400).json({message:"order not found"})
+            })
+            .populate({
+                path: "shopOrders.assignedDeliveryBoy",
+                model: "User",
+
+            })
+            .populate({
+                path: "shopOrders.shopOrderItems",
+                model: "Item",
+            })
+            .lean()
+
+        if (!order) {
+            return res.status(400).json({ message: "order not found" })
 
 
         }
 
         return res.status(200).json(order)
 
-    
-    }
-    catch(error){
-
-        return res.status(400).json({message:"get order by  id error"})
-
 
     }
+    catch (error) {
 
+        return res.status(500).json({ message: "get order by  id error" })
+
+
+    }
+
+}
+
+
+export const sendDeliveryOtp = async (req, res) => {
+    try {
+
+        const { orderId, shopOrderId } = req.body
+        const order = await Order.findById(orderId).populate("user")
+
+
+        const ShopOrder = order.shopOrders.id(shopOrderId)
+
+        if (!order || !shopOrder) {
+            return res.status(400).json({ message: "order/shopOrder id is not valid" })
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 9000).toString()
+
+        shopOrder.deliveryOtp = otp
+        shopOrder.otpExpires = Date.now() + 5 * 60 * 1000
+
+        await order.save()
+
+        await sendDeliveryOtpMail(order.user, otp)
+
+        return res.status(200).json({ message: `otp  sent successfully to ${order?.user.fullName}` })
+
+
+    }
+    catch (error) {
+        return res.status(500).json({ message: "delivery  otp error " })
+
+
+    }
+}
+
+
+export const verifyDeliveryOtp = async (req, res) => {
+    try {
+        const { orderId, shopOrderId, otp } = req.body
+        const order = await Order.findById(orderId).populate("user")
+
+
+        const ShopOrder = order.shopOrders.id(shopOrderId)
+
+        if (!order || !shopOrder) {
+            return res.status(400).json({ message: "order/shopOrder id is not valid" })
+        }
+
+
+        if (shopOrder.deliveryOtp !== otp || !shopOrder.otpExpires || shopOrder.otpExpires<Date.now()){
+            return res.status(400).json({message:"Invalid/Expired Otp"})
+        }
+
+
+        shopOrder.status="Delivered"
+        shopOrder.deliverdAt=Date.now()
+
+        await order.save()
+
+        await deliveryAssignment.deleteOne({
+            shopOrderId:shopOrder._id,
+            order:order._id,
+            assignedTo:shopOrder.assignedDeliveryBoy
+        })
+
+        return res.status(200).json({message:"ordered delivered successfully"})
+
+
+
+
+    }
+    catch (error) {
+
+        }
 }
