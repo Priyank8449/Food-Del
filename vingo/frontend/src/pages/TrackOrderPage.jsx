@@ -63,7 +63,7 @@ const TrackOrderPage = () => {
                     <p><span className='font-semibold'>Delivery Address:</span>{currentOrder.deliveryAddress.text}</p>
                     </div>
 
-                    {shopOrder.status!="delivered"?<>
+                    {shopOrder.status!="Delivered"?<>
 
                     {shopOrder.assignedDeliveryBoy?
                     <div className='text-sm text-gray-700'>
@@ -82,7 +82,7 @@ const TrackOrderPage = () => {
 
 <div></div>
 
-                    {shopOrder.assignedDeliveryBoy&&
+                    {(shopOrder.assignedDeliveryBoy&& shopOrder.status!=="Delivered" )&&
 
                     <div className='h-[400px] w-full rounded-2xl overflow-hidden shadow-md'>
 

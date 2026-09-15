@@ -473,7 +473,7 @@ export const sendDeliveryOtp = async (req, res) => {
         const order = await Order.findById(orderId).populate("user")
 
 
-        const ShopOrder = order.shopOrders.id(shopOrderId)
+        const shopOrder = order.shopOrders.id(shopOrderId)
 
         if (!order || !shopOrder) {
             return res.status(400).json({ message: "order/shopOrder id is not valid" })
@@ -500,42 +500,111 @@ export const sendDeliveryOtp = async (req, res) => {
 }
 
 
+// export const verifyDeliveryOtp = async (req, res) => {
+//     try {
+//         const { orderId, shopOrderId, otp } = req.body
+//         const order = await Order.findById(orderId).populate("user")
+
+        
+//         const shopOrder = order.shopOrders.id(shopOrderId)
+        
+//         if (!order || !shopOrder) {
+//             return res.status(400).json({ message: "order/shopOrder id is not valid" })
+//         }
+        
+
+//         if (shopOrder.deliveryOtp !== otp || !shopOrder.otpExpires || shopOrder.otpExpires<Date.now()){
+//             return res.status(400).json({message:"Invalid/Expired Otp"})
+//         }
+
+
+//         shopOrder.status="Delivered"
+//         shopOrder.deliverdAt=Date.now()
+
+//         await order.save()
+
+//         await deliveryAssignment.deleteOne({
+//             shopOrderId:shopOrder._id,
+//             order:order._id,
+//             assignedTo:shopOrder.assignedDeliveryBoy
+//         })
+
+//         return res.status(200).json({message:"ordered delivered successfully"})
+
+
+
+
+//     }
+//     catch (error) {
+//         console.error("VERIFY DELIVERY OTP ERROR:", error)
+
+//     return res.status(500).json({
+//         message: "Delivery OTP verification error",
+//         error: error.message
+
+//         })}
+// }
+
+
 export const verifyDeliveryOtp = async (req, res) => {
     try {
         const { orderId, shopOrderId, otp } = req.body
+
         const order = await Order.findById(orderId).populate("user")
 
-
-        const ShopOrder = order.shopOrders.id(shopOrderId)
-
-        if (!order || !shopOrder) {
-            return res.status(400).json({ message: "order/shopOrder id is not valid" })
+        // Check order first
+        if (!order) {
+            return res.status(400).json({
+                message: "Order ID is not valid"
+            })
         }
 
+        // Now find shopOrder
+        const shopOrder = order.shopOrders.id(shopOrderId)
 
-        if (shopOrder.deliveryOtp !== otp || !shopOrder.otpExpires || shopOrder.otpExpires<Date.now()){
-            return res.status(400).json({message:"Invalid/Expired Otp"})
+        // Check shopOrder
+        if (!shopOrder) {
+            return res.status(400).json({
+                message: "Shop Order ID is not valid"
+            })
         }
 
+        // Verify OTP
+        if (
+            shopOrder.deliveryOtp !== otp ||
+            !shopOrder.otpExpires ||
+            shopOrder.otpExpires < Date.now()
+        ) {
+            return res.status(400).json({
+                message: "Invalid/Expired OTP"
+            })
+        }
 
-        shopOrder.status="Delivered"
-        shopOrder.deliverdAt=Date.now()
+        // Mark order as delivered
+        shopOrder.status = "Delivered"
+        shopOrder.deliverdAt = Date.now()
 
         await order.save()
 
-        await deliveryAssignment.deleteOne({
-            shopOrderId:shopOrder._id,
-            order:order._id,
-            assignedTo:shopOrder.assignedDeliveryBoy
+        // Delete delivery assignment
+        await DeliveryAssignment.deleteOne({
+            shopOrderId: shopOrder._id,
+            order: order._id,
+            assignedTo: shopOrder.assignedDeliveryBoy
         })
 
-        return res.status(200).json({message:"ordered delivered successfully"})
+        return res.status(200).json({
+            message: "Order delivered successfully"
+        })
 
+    } catch (error) {
 
+        console.error("VERIFY DELIVERY OTP ERROR:", error)
 
-
+        return res.status(500).json({
+            message: "Delivery OTP verification error",
+            error: error.message
+        })
     }
-    catch (error) {
-
-        }
 }
+

@@ -53,7 +53,7 @@ const DeliverBoyDashboard = () => {
   const sendOtp = async () => {
 
     try {
-      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp/`,{
+      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp`,{
         orderId:currentOrder._id,shopOrderId:currentOrder.shopOrder._id
       }, { withCredentials: true })
           setShowOtpBox(true);
@@ -68,7 +68,7 @@ const DeliverBoyDashboard = () => {
   const verifyOtp = async () => {
 
     try {
-      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp/`,{
+      const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`,{
         orderId:currentOrder._id,shopOrderId:currentOrder.shopOrder._id,otp
       }, { withCredentials: true })
 
@@ -101,14 +101,14 @@ const DeliverBoyDashboard = () => {
     getCurrentOrder()
   }, [userData])
   return (
-    <div className='w-full min-h-screen flex flex-col items-center overflow-x-hidden'>
+    <div className=' bg-white w-full min-h-screen flex flex-col items-center overflow-x-hidden'>
       <Nav />
 
 
       <div className='w-full max-w-[800px] flex flex-col gap-5 items-center '>
 
 
-        <div className=' bg-white rounded-2xl shadow-xl p-5 flex flex-col gap-3 text-center justify-start items-center w-[90%] border border-orange-200 '>
+        <div className=' bg-white backdrop-blur-2xl rounded-2xl shadow-xl p-5 flex flex-col gap-3 text-center justify-start items-center w-[90%] border border-orange-200 '>
 
           <h1 className='text-xl font-bold text-red-500' >Welcome, {userData.fullName}</h1>
           <p className='text-red-400' > <span className='font-semibold'>Latitude</span>:{userData.location.coordinates[1]},<span className='font-semibold'> Longitude</span>:{userData.location.coordinates[0]}</p>
@@ -118,7 +118,7 @@ const DeliverBoyDashboard = () => {
 
 
         {!currentOrder &&
-          <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] borde border-orange-300' >
+          <div className='bg-white  rounded-2xl p-5 shadow-md w-[90%] borde border-orange-300' >
 
             <h2 className='text-lg font-bold mb-4 flex items-center gap-2'>Available Orders</h2>
 
@@ -175,7 +175,7 @@ const DeliverBoyDashboard = () => {
 
                 <p className='text-sm font-semibold mb-2'>Enter Otp sent to <span className='text-blue-600 font-bold'>{currentOrder.user.fullName}</span></p>
                 <input onChange={(e)=>setOtp(e.target.value)} value={otp} type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter Otp-XXXX' />
-                <button onClick={()=>verifyOtp} className=' w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition-all'>Submit Otp</button>
+                <button onClick={verifyOtp} className=' w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition-all'>Submit Otp</button>
 
 
               </div>
