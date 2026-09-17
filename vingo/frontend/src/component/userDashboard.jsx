@@ -24,6 +24,23 @@ const UserDashboard = () => {
     const [showLeftCateButton, setShowLeftCateButton] = useState(false)
     const [showLeftShopButton, setShowLeftShopButton] = useState(false)
     const [showRightShopButton, setShowRightShopButton] = useState(false)
+    const [updatedItemList, setUpdatedItemList] = useState([])
+
+
+    const handleFilterByCategory=(category)=>{
+
+        if(category=="All"){
+            setUpdatedItemList(itemsInMyCity)
+        }
+        else{
+            const filteredList=itemsInMyCity.filter(i=>i.category===category)
+
+            setUpdatedItemList(filteredList)
+        }
+
+
+
+    }
 
     const updateButton = (ref, setLeftButton, setRightButton) => {
 
@@ -35,6 +52,11 @@ const UserDashboard = () => {
         }
 
     }
+
+    useEffect(()=>{
+        setUpdatedItemList(itemsInMyCity)
+
+    },[itemsInMyCity])
 
 
     useEffect(() => {
@@ -83,7 +105,7 @@ const UserDashboard = () => {
 
                     <div className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent scroll-smooth ' ref={cateScrollRef}>
                         {categories.map((cate, index) => (
-                            <CategoryCard name={cate.category} image={cate.image} key={index} />
+                            <CategoryCard onClick={()=>handleFilterByCategory(cate.category)} name={cate.category} image={cate.image} key={index} />
                         ))}
                     </div>
 
@@ -117,7 +139,7 @@ const UserDashboard = () => {
 
                     <div className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-[#ff4d2d] scrollbar-track-transparent scroll-smooth ' ref={ShopScrollRef}>
                         {shopInMyCity?.map((shop, index) => (
-                            <CategoryCard name={shop.name} image={shop.image} key={index} />
+                            <CategoryCard  name={shop.name} image={shop.image} key={index} />
                         ))}
                     </div>
 
@@ -149,7 +171,7 @@ const UserDashboard = () => {
                 <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
 
                     {
-                        itemsInMyCity?.map((item,index)=>(
+                        updatedItemList?.map((item,index)=>(
                             <FoodCard key={index} data={item} />
                         ))
                     }
