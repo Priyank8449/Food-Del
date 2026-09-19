@@ -10,6 +10,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/userSlice';
 
+import { motion } from 'framer-motion';
 
 
 
@@ -50,7 +51,14 @@ const FoodCard = ({ data }) => {
     }
 
     return (
-        <div className='w-[250px] rounded-2xl border-2 border-red-400 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col '>
+        < motion.div
+        
+        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.1
+                        }}className='w-[250px] rounded-2xl border-2 border-red-400 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col '>
 
 
 
@@ -115,7 +123,7 @@ const FoodCard = ({ data }) => {
 
 
 
-        </div>
+        </motion.div>
     )
 }
 

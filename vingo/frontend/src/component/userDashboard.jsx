@@ -7,18 +7,22 @@ import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { useSelector } from 'react-redux';
 import FoodCard from './FoodCard';
-
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 
 
 
 const UserDashboard = () => {
 
-    const { currentCity, shopInMyCity , itemsInMyCity} = useSelector(state => state.user)
+    const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(state => state.user)
 
 
     const cateScrollRef = useRef()
     const ShopScrollRef = useRef()
+
+
+    const navigate = useNavigate()
 
     const [showRightCateButton, setShowRightCateButton] = useState(false)
     const [showLeftCateButton, setShowLeftCateButton] = useState(false)
@@ -27,13 +31,13 @@ const UserDashboard = () => {
     const [updatedItemList, setUpdatedItemList] = useState([])
 
 
-    const handleFilterByCategory=(category)=>{
+    const handleFilterByCategory = (category) => {
 
-        if(category=="All"){
+        if (category == "All") {
             setUpdatedItemList(itemsInMyCity)
         }
-        else{
-            const filteredList=itemsInMyCity.filter(i=>i.category===category)
+        else {
+            const filteredList = itemsInMyCity.filter(i => i.category === category)
 
             setUpdatedItemList(filteredList)
         }
@@ -53,10 +57,10 @@ const UserDashboard = () => {
 
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         setUpdatedItemList(itemsInMyCity)
 
-    },[itemsInMyCity])
+    }, [itemsInMyCity])
 
 
     useEffect(() => {
@@ -103,11 +107,19 @@ const UserDashboard = () => {
 
 
 
-                    <div className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent scroll-smooth ' ref={cateScrollRef}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 100 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.1
+                        }}
+
+                        className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent scroll-smooth ' ref={cateScrollRef}>
                         {categories.map((cate, index) => (
-                            <CategoryCard onClick={()=>handleFilterByCategory(cate.category)} name={cate.category} image={cate.image} key={index} />
+                            <CategoryCard onClick={() => handleFilterByCategory(cate.category)} name={cate.category} image={cate.image} key={index} />
                         ))}
-                    </div>
+                    </motion.div>
 
 
                     {showRightCateButton &&
@@ -139,7 +151,7 @@ const UserDashboard = () => {
 
                     <div className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-[#ff4d2d] scrollbar-track-transparent scroll-smooth ' ref={ShopScrollRef}>
                         {shopInMyCity?.map((shop, index) => (
-                            <CategoryCard  name={shop.name} image={shop.image} key={index} />
+                            <CategoryCard onClick={() => navigate(`/shop/${shop._id}`)} name={shop.name} image={shop.image} key={index} />
                         ))}
                     </div>
 
@@ -171,7 +183,7 @@ const UserDashboard = () => {
                 <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
 
                     {
-                        updatedItemList?.map((item,index)=>(
+                        updatedItemList?.map((item, index) => (
                             <FoodCard key={index} data={item} />
                         ))
                     }
