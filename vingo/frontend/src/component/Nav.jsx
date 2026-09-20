@@ -108,7 +108,7 @@ const Nav = () => {
 
 
                                     </button>
-                                    <button className=' md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
+                                    <button onClick={()=>navigate("/add-item")} className=' md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
                                         <FaPlus size={20} />
 
 

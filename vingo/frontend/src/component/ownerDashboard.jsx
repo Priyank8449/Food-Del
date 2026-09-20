@@ -6,6 +6,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 import { FaPencilAlt } from "react-icons/fa";
 import OwnerItemCard from './OwnerItemCard';
+import { easeOut, motion } from 'framer-motion';
 
 const OwnerDashboard = () => {
 
@@ -50,7 +51,17 @@ const OwnerDashboard = () => {
                             Welcome to {myShopData.name}</h1>
 
 
-                        <div className='bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all 
+                        <motion.div
+                        initial={{ opacity: 0,scale:0.8 }}
+                        animate={{ opacity: 1,scale:1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0,
+                            ease:"easeInOut"
+                            
+                        }}
+                        
+                        className='bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all 
                             duration-300 w-full max-w-3xl relative'>
 
                             <div className='rounded-full absolute right-4 top-4 bg-red-400 text-white p-2 shadow-md hover:bg-orange-600 transition-colors cursor-pointer ' onClick={() => navigate("/create-edit-shop")}>
@@ -66,7 +77,7 @@ const OwnerDashboard = () => {
                                 <p className='text-gray-500 mb-4 '>{myShopData.city},{myShopData.state}</p>
                                 <p className='text-gray-500 mb-4 '>{myShopData.address}</p>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {
                               (!myShopData?.items || myShopData.items.length === 0) &&

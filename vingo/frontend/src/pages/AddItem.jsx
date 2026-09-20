@@ -8,6 +8,7 @@ import { linkWithCredential } from 'firebase/auth';
 import { setMyShopData } from '../redux/ownerSlice';
 import axios from "axios";
 import { ClipLoader } from 'react-spinners';
+import { motion } from 'framer-motion';
 
 const AddItem = () => {
   const { myShopData } = useSelector(state => state.owner)
@@ -85,7 +86,7 @@ navigate("/")
 
 }
   return (
-    <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-200 relative to-white min-h-screen'>
+    <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-sky-100 relative to-white min-h-screen'>
 
       <div onClick={() => navigate("/")} className='absolute top-[20px] left-[20px] z-[10] mb-[10px] '>
         <IoMdArrowBack size={35} className='text-orange-300' />
@@ -93,7 +94,16 @@ navigate("/")
 
       </div>
 
-      <div className='max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100'>
+      <motion.div
+      initial={{ opacity: 0,scale:0 }}
+                        whileInView={{ opacity: 1,scale:1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.2,
+                            
+                        }}
+
+      className='max-w-lg w-full bg-black/10 backdrop-blur-3xl shadow-xl rounded-2xl p-8 border border-orange-100'>
 
         <div className=' flex flex-col items-center mb-6'>
           <div className='bg-orange-100 p-4 rounded-full mb-4'>
@@ -114,7 +124,7 @@ navigate("/")
                Name
             </label>
 
-            <input onChange={(e)=>setName(e.target.value)}  type="text" placeholder='Enter Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
+            <input onChange={(e)=>setName(e.target.value)}  type="text" placeholder='Enter Food Name ' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' />
           </div>
           <div>
             <label className=" block text-sm font-medium text-gray-700 mb-1">
@@ -177,7 +187,7 @@ navigate("/")
           }
           
 
-          <button onClick={handleSubmit} className='w-full cursor-pointer bg-red-900 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>
+          <button onClick={handleSubmit} className='w-full cursor-pointer bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-red-400 hover:shadow-lg transition-all duration-200'>
             
             {
               loading? <ClipLoader size={20} color='white'/>
@@ -186,7 +196,7 @@ navigate("/")
           </button>
         </form>
 
-      </div>
+      </motion.div>
 
     </div>
   )

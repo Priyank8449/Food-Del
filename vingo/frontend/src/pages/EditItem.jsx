@@ -9,6 +9,8 @@ import { setMyShopData } from '../redux/ownerSlice';
 import axios from "axios";
 import { ClipLoader } from 'react-spinners';
 
+import { motion } from 'framer-motion';
+
 const EditItem = () => {
     const { myShopData } = useSelector(state => state.owner)
 
@@ -122,7 +124,15 @@ const EditItem = () => {
 
             </div>
 
-            <div className='max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100'>
+            <motion.div
+            initial={{ opacity: 0,scale:0 }}
+                        whileInView={{ opacity: 1,scale:1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.2,
+                            
+                        }}
+            className='max-w-lg w-full bg-black/10 shadow-xl rounded-2xl p-8 border border-orange-100'>
 
                 <div className=' flex flex-col items-center mb-6'>
                     <div className='bg-orange-100 p-4 rounded-full mb-4'>
@@ -218,7 +228,7 @@ const EditItem = () => {
 
                 </form>
 
-            </div>
+            </motion.div>
 
         </div>
     )

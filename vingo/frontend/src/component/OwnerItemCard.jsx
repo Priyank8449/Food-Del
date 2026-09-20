@@ -6,7 +6,7 @@ import { serverUrl } from '../App';
 import { useDispatch } from 'react-redux';
 import { setMyShopData } from '../redux/ownerSlice';
 import axios from 'axios';
-
+import { motion } from 'framer-motion';
 
 
 const OwnerItemCard = ({data}) => {
@@ -29,7 +29,16 @@ const OwnerItemCard = ({data}) => {
         
     }
   return (
-    <div className='flex bg-white rounded-lg shadow-md overflow-hidden border border-red-500 w-full max-w-2xl'>
+    <motion.div
+    initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.2,
+                            
+                        }}
+    
+    className='flex bg-white rounded-lg shadow-xl overflow-hidden border border-blue-300 w-full max-w-2xl'>
 
         <div className='w-36  flex-shrink-0 bg-gray-50'>
             <img src={data.image} alt="" className='w-full h-full object-cover' />
@@ -66,7 +75,7 @@ const OwnerItemCard = ({data}) => {
         </div>
 
 
-    </div>
+    </motion.div>
   )
 }
 

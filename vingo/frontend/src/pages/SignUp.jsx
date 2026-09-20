@@ -11,6 +11,7 @@ import { auth } from '../../firebase';
 import{ ClipLoader } from "react-spinners"
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
+import { motion } from 'framer-motion';
 
 
 
@@ -80,9 +81,19 @@ const SignUp = () => {
 
     }
     return (
-        <div className='min-h-screen w-full flex items-center justify-center p-3 ' style={{ backgroundColor: bgColor, backgroundSize: "cover" }}>
+        <div className='min-h-screen w-full  flex items-center justify-center p-3 ' style={{  backgroundSize: "cover" }}>
 
-            <div className={`0 rounded-xl  shadow-2xl w-full max-w-md p-4 border backdrop-blur-xl ]`}>
+            <motion.div
+
+            initial={{ opacity: 0,scale:0 }}
+                        whileInView={{ opacity: 1,scale:1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.2,
+                            
+                        }}
+            
+            className={`0 rounded-xl  shadow-2xl w-full max-w-md p-4 border border-red-200 backdrop-blur-xl ]`}>
                 <h1 className={`text-3xl font-bold mb-2`} style={{ color: primaryColor }}>Anytime Craving</h1>
                 <p className='text-gray-400 mb-4'>Create your account to  get  started with  delicious food deliveries </p>
 
@@ -147,7 +158,7 @@ const SignUp = () => {
 
 
 
-            </div>
+            </motion.div>
 
         </div>
     )

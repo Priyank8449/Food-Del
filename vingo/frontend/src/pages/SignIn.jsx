@@ -11,6 +11,7 @@ import { GoogleAuthProvider, setPersistence, signInWithPopup } from 'firebase/au
 import { auth } from '../../firebase';
 import { ClipLoader } from 'react-spinners';
 import { useDispatch } from 'react-redux';
+import { motion } from 'framer-motion';
 import { setUserData } from '../redux/userSlice';
  
 
@@ -74,9 +75,22 @@ dispatch(setUserData(result.data))
     }
 
     return (
-        <div className='min-h-screen w-full flex items-center justify-center p-3 ' style={{ backgroundSize: "cover",backgroundPosition:"center"}}>
+        <motion.div
+        
+        
+        
+        className='min-h-screen w-full bg-sky-100 flex items-center justify-center p-3 ' style={{ backgroundSize: "cover",backgroundPosition:"center"}}>
 
-            <div className={`bg-black/10 rounded-xl  shadow-2xl w-full max-w-md p-4 border backdrop-blur-xl ]`}>
+            <motion.div
+            initial={{ opacity: 0,scale:0 }}
+                        whileInView={{ opacity: 1,scale:1 }}
+                        transition={{
+                            duration: 0.6,
+                            delay: 0.2,
+                            
+                        }}
+            
+            className={`bg-black/10 rounded-xl  shadow-2xl w-full max-w-md p-4  backdrop-blur-2xl ]`}>
                 <h1 className={`text-3xl font-bold mb-2`} style={{ color: primaryColor }}>Anytime Craving</h1>
                 <p className='text-gray-400 mb-4'>Sign In to your account to  get  started with  delicious food deliveries </p>
 
@@ -103,7 +117,7 @@ dispatch(setUserData(result.data))
 
 
 
-                <button onClick={handleSignIn} disabled={loading} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-red-800 text-white hover:bg-[#a06161]`}  >
+                <button onClick={handleSignIn} disabled={loading} className={`font-semibold w-full mt-4 flex items-center justify-center p-3 transition  duration-200 cursor-pointer  rounded-lg bg-sky-600 text-white hover:bg-[#a06161]`}  >
                     {loading?<ClipLoader/>:"Sign In"}
                     
                 </button>
@@ -122,9 +136,9 @@ dispatch(setUserData(result.data))
 
 
 
-            </div>
+            </motion.div>
 
-        </div>
+        </motion.div>
     )
 }
 
