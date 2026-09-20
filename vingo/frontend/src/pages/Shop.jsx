@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { serverUrl } from '../App'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { motion } from "framer-motion"
+import FoodCard from '../component/FoodCard'
+import Nav from '../component/Nav'
 
 const Shop = () => {
 
     const { shopId } = useParams()
     const [items, setItems] = useState([])
     const [shop, setShop] = useState([])
+    const navigate=useNavigate()
 
     const handleShop = async () => {
         try {
@@ -32,7 +35,9 @@ const Shop = () => {
 
     }, [shopId])
     return (
-        <div className=' pt-4 min-h-screen bg-sky-100 '>
+
+        <div className=' p-5 min-h-screen bg-sky-100 '>
+            <Nav/>
 
             {shop &&
 
@@ -44,7 +49,7 @@ const Shop = () => {
                     }}
                     
 
-                    className=' mx-4  rounded-2xl shadow-2xl relative  h-64 md:h-80 lg:h-96 overflow-hidden '>
+                    className=' mt-20  rounded-2xl shadow-2xl relative   h-64 md:h-80 lg:h-96 overflow-hidden '>
 
                     <img src={shop.image} alt="" className='rounded-2xl w-full h-full object-cover' />
                     <div className='absolute rounded-2xl inset-0 bg-gradient-to-b from-black/70 to-black/30 
@@ -69,6 +74,20 @@ const Shop = () => {
             <div className='max-w-7xl mx-auto px-6 py-10'>
 
                 <h2 className=' flex items-center justify-center gap-3 text-3xl font-bold mb-10 text-gray-800 '  > Our Menu</h2>
+
+                {items.length>0 ?(
+
+                    <div className='flex flex-wrap justify-center gap-8'>
+
+                        {items.map((item)=>(
+                            <FoodCard data={item}/>
+                        ))}
+                    </div>
+
+
+                ):
+                <p className='text-center text-gray-500 text-lg'>No Items Available</p>
+                }
 
 
             </div>

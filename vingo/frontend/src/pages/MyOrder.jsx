@@ -5,9 +5,10 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../component/UserOrderCard';
 import OwnerOrderCard from '../component/OwnerOrderCard';
+import { motion } from 'framer-motion';
 
 const MyOrder = () => {
-  const { userData,myOrders } = useSelector(state => state.user)
+  const { userData, myOrders } = useSelector(state => state.user)
 
   const navigate = useNavigate()
 
@@ -26,22 +27,33 @@ const MyOrder = () => {
           <h1 className='text-2xl font-bold text-start'>My Orders</h1>
         </div>
 
-        <div className='space-y-6'>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{
+            duration: 0.6,
+            delay: 0.1
+          }}
+
+
+
+
+          className='space-y-6'>
           {
             myOrders.map((order, index) => (
 
               userData.role == "user" ? (
-                <UserOrderCard data={order} key={index}/>
+                <UserOrderCard data={order} key={index} />
               ) :
-                userData.role == "owner"?(
-                  <OwnerOrderCard data={order} key={index}/>
+                userData.role == "owner" ? (
+                  <OwnerOrderCard data={order} key={index} />
                 )
-                :null
+                  : null
 
             ))
           }
 
-        </div>
+        </motion.div>
       </div>
 
     </div>

@@ -40,7 +40,7 @@ const Nav = () => {
     }
     return (
         <>
-            <div className='w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-olive-300 overflow-visible:'>
+            <div className='mx-auto my-2 w-[96%] h-[80px] flex items-center justify-between md:justify-center gap-[50px] px-[10px] fixed top-0 z-[9999] bg-purple-300/50 backdrop-blur-2xl  rounded-2xl overflow-hidden:'>
 
                 {
                     showSearch && userData.role == "user" &&
@@ -61,13 +61,17 @@ const Nav = () => {
 
                 }
                 <h1 className='text-3xl font-bold mb-2 text-red-600/60'>
-                    Anytime <span className='text-yellow-600'>Craving</span>
+                   <button onClick={()=>navigate("/")}>
+                    
+                     Anytime <span className='text-amber-900'>Craving</span>
+                    </button>
 
                 </h1>
 
                 {
                     userData.role == "user" &&
-                    <div className='md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-black/25 shadow-xl rounded-lg  items-center gap-[20px] hidden  md:flex'>
+                    <div className='md:w-[60%] lg:w-[40%] h-[50px] bg-white/30
+                     shadow-black/25 shadow-lg rounded-lg  items-center gap-[20px] hidden  md:flex'>
                         <div className='flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400'>
                             <IoLocationSharp className=' w-[25px] h-[25px] text-red-800' />
                             <div className='w-[80%] truncate text-gray-500'>{currentCity}</div>
@@ -76,7 +80,7 @@ const Nav = () => {
                         </div>
                         <div className='flex w-[80%] items-center gap-[10px]'>
                             <IoMdSearch size={25} className='text-red-800/70' />
-                            <input className='w-full px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
+                            <input className='w-full  px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
 
 
                         </div>

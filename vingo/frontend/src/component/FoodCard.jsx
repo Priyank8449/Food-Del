@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 
 const FoodCard = ({ data }) => {
     const dispatch = useDispatch()
-    const {cartItems}=useSelector(state=>state.user)
+    const { cartItems } = useSelector(state => state.user)
 
     const [quantity, setQuantity] = useState(0)
 
@@ -52,13 +52,16 @@ const FoodCard = ({ data }) => {
 
     return (
         < motion.div
-        
-        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        transition={{
-                            duration: 0.6,
-                            delay: 0.1
-                        }}className='w-[250px] rounded-2xl border-2 border-red-400 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col '>
+
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{
+                duration: 0.6,
+                delay: 0.1,
+                type: "spring",
+                stiffness: 100,
+                damping: 10
+            }} className='w-[250px] rounded-2xl border-2 border-red-400 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col '>
 
 
 
@@ -100,19 +103,19 @@ const FoodCard = ({ data }) => {
 
                         <button onClick={() => {
 
-                            quantity>0?
-                            dispatch(addToCart({
-                            id: data._id,
-                            name: data.name,
-                            price: data.price,
-                            image: data.image,
-                            shop: data.shop,
-                            quantity,
-                            foodType: data.foodType,
-                        }
-                        
-                        )):null
-                        }} className={`${cartItems.some(i=>i.id==data._id)?"bg-gray-800":"bg-orange-700"} text-white px-3 py-2 transition-colors`}><FaShoppingCart size={16} />
+                            quantity > 0 ?
+                                dispatch(addToCart({
+                                    id: data._id,
+                                    name: data.name,
+                                    price: data.price,
+                                    image: data.image,
+                                    shop: data.shop,
+                                    quantity,
+                                    foodType: data.foodType,
+                                }
+
+                                )) : null
+                        }} className={`${cartItems.some(i => i.id == data._id) ? "bg-gray-800" : "bg-orange-700"} text-white px-3 py-2 transition-colors`}><FaShoppingCart size={16} />
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 const UserOrderCard = ({ data }) => {
     const formatDate = (dateString) => {
@@ -17,7 +18,7 @@ const UserOrderCard = ({ data }) => {
     return (
 
 
-        <div className='bg-white rounded-lg shadow p-4 space-y-4'>
+        < div className='bg-white rounded-lg shadow p-4 space-y-4'>
 
             <div className=' flex justify-between border-b pb-2'>
 

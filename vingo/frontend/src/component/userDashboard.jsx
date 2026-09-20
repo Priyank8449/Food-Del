@@ -89,9 +89,9 @@ const UserDashboard = () => {
 
     return (
         <>
-            <Nav />
+            <Nav  />
 
-            <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
+            <div className=' w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
 
                 <h1 className='text-gray-800 text-2xl sm:text-3xl'>Inspiration for your first  order</h1>
 
@@ -112,7 +112,10 @@ const UserDashboard = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{
                             duration: 0.6,
-                            delay: 0.1
+                            delay: 0.1,
+                            type: "spring",
+                            stiffness: 100,
+                            damping: 10
                         }}
 
                         className='w-full flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent scroll-smooth ' ref={cateScrollRef}>
@@ -137,7 +140,15 @@ const UserDashboard = () => {
 
                 <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best Shop {currentCity}</h1>
 
-                <div className='w-full relative '>
+                <motion.div
+                initial={{ opacity: 0,  }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{
+                            duration: 0.9,
+                            delay: 0.2,}}
+                
+                
+                className='w-full relative '>
 
 
                     {showLeftShopButton &&
@@ -164,7 +175,7 @@ const UserDashboard = () => {
 
 
 
-                </div>
+                </motion.div>
 
 
 
