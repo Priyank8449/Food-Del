@@ -13,6 +13,14 @@ import { ClipLoader } from 'react-spinners';
 import { useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import { setUserData } from '../redux/userSlice';
+
+import { FaBicycle } from "react-icons/fa";
+import { MdHealthAndSafety } from "react-icons/md";
+import { FaStar } from "react-icons/fa6";
+
+import signIn from "../assets/signin.png"
+import hat from "../assets/hat.png"
+
  
 
 const SignIn = () => {
@@ -75,11 +83,92 @@ dispatch(setUserData(result.data))
     }
 
     return (
+        <div className='min-h-screen w-full bg-sky-200 gap-10 flex items-center justify-center p-3 ' style={{ backgroundSize: "cover" }}>
+        
+        
+                    <div className='hidden  sm:flex  w-[50%] p-10 flex flex-col justify-between  bg-amber-200/10 border border-sky-500 shadow-2xl h-160 rounded-2xl backdrop-blur-2xl   '>
+        
+        
+                        <div className=' flex gap-6 '>
+        
+        
+                            <div className='h-20 w-20 flex justify-center bg-transparent  rounded-2xl'>
+        
+                                <img className='object-contain w-full rounded-2xl' src={hat} alt="" />
+        
+                            </div>
+        
+                            <div>
+        
+                                <h1 className=' font-bold text-sky-500 text-5xl'>
+                                    <span className='text-blue-800 font-bold'>AnyTime</span>  Craving
+                                </h1>
+                                <div className='flex gap-8'>
+                                    <p className='text-blue-900 font-semibold text-lg'>Good Food</p>
+                                    <p className='text-blue-900 font-semibold text-lg'> Happy You </p>
+                                </div>
+                            </div>
+        
+        
+                        </div>
+                        <div className=' flex flex-col '>
+                            <h2 className='font-bold text-blue-900 text-3xl'>Delicious Food </h2>
+                            <h2 className='font-bold text-blue-900 text-3xl'>Delivered To Your </h2>
+                            <h2 className='font-bold text-blue-900 text-3xl'>Doorstep </h2>
+        
+                            <p className='text-blue-600 mt-5 font-medium'>From your favorite resturant </p>
+        
+                            <p className='text-blue-600  font-medium'>to  your home. We deliver happiness</p>
+                            <p className='text-blue-600  font-medium'> in  every  bite</p>
+                        </div>
+        
+        
+                        <div className='h-30 flex' >
+                            <img className='object-contain' src={signIn} alt="" />
+        
+                        </div>
+        
+                            
+                        <div className='flex gap-6'>
+                            <div className='flex flex-col shadow-xl border-l p-2 '>
+                                <div className=' h-10 w-10'>
+                                    <FaBicycle className='size-10 text-blue-500'/>
+                                    
+                                </div>
+                                <p className='text-blue-500'  >Fast Delivery</p>
+        
+                            </div>
+                            <div className='flex flex-col shadow-xl border-l p-2 '>
+                                <div className=' h-10 w-10 flex items-center justify-center'>
+                                    
+                                    <MdHealthAndSafety className='size-10 text-blue-500' />
+        
+        
+                                </div>
+                                <p className='text-blue-500'>Safe Payments</p>
+        
+                            </div>
+                            <div className='flex flex-col shadow-xl border-l p-2 '>
+                                <div className=' h-10 w-10'>
+                                    <FaStar className='size-10 text-blue-500' />
+        
+                                    
+                                   
+                                    </div>
+                                <p className='text-blue-500'>Top Resturants</p>
+        
+                            </div>
+                            
+                        </div>
+        
+                    </div>
+
+        
         <motion.div
         
         
         
-        className='min-h-screen w-full bg-sky-100 flex items-center justify-center p-3 ' style={{ backgroundSize: "cover",backgroundPosition:"center"}}>
+        className='min-h-screen flex items-center justify-center p-3 ' style={{ backgroundSize: "cover",backgroundPosition:"center"}}>
 
             <motion.div
             initial={{ opacity: 0,scale:0 }}
@@ -90,7 +179,7 @@ dispatch(setUserData(result.data))
                             
                         }}
             
-            className={`bg-black/10 rounded-xl  shadow-2xl w-full max-w-md p-4  backdrop-blur-2xl ]`}>
+            className={`bg-white/20 border border-sky-500 rounded-xl   shadow-2xl w-[100%] max-w-md p-4  backdrop-blur-2xl ]`}>
                 <h1 className={`text-3xl font-bold mb-2`} style={{ color: primaryColor }}>Anytime Craving</h1>
                 <p className='text-gray-400 mb-4'>Sign In to your account to  get  started with  delicious food deliveries </p>
 
@@ -139,6 +228,7 @@ dispatch(setUserData(result.data))
             </motion.div>
 
         </motion.div>
+        </div>
     )
 }
 
