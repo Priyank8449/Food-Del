@@ -9,13 +9,15 @@ import { useSelector } from 'react-redux';
 import FoodCard from './FoodCard';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import { serverUrl } from '../App';
 
 
 
 
 const UserDashboard = () => {
 
-    const { currentCity, shopInMyCity, itemsInMyCity } = useSelector(state => state.user)
+    const { currentCity, shopInMyCity, itemsInMyCity ,searchItems} = useSelector(state => state.user)
 
 
     const cateScrollRef = useRef()
@@ -85,11 +87,19 @@ const UserDashboard = () => {
         }
     }
 
-
+    
+    
+   
 
     return (
         <>
             <Nav  />
+            {searchItems && searchItems.length>0 && (
+                <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white  shadow-md rounded-2xl mt-4'>
+
+
+                </div>
+            )}
 
             <div className=' w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
 

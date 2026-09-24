@@ -83,7 +83,7 @@ dispatch(setUserData(result.data))
     }
 
     return (
-        <div className='min-h-screen w-full bg-sky-200 gap-10 flex items-center justify-center p-3 ' style={{ backgroundSize: "cover" }}>
+        <div className='min-h-screen w-full bg-sky-100 gap-10 flex items-center justify-center p-3 ' style={{ backgroundSize: "cover" }}>
         
         
                     <div className='hidden  sm:flex  w-[50%] p-10 flex flex-col justify-between  bg-amber-200/10 border border-sky-500 shadow-2xl h-160 rounded-2xl backdrop-blur-2xl   '>

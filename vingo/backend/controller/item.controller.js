@@ -226,10 +226,10 @@ export const searchItems=async(req,res)=>{
             shop:{$in:shopIds},
             $or:[
                 {
-                    name:{$regex:query,option:"i"}
+                    name:{$regex:query,$options:"i"}
                 },
                 {
-                    category:{$regex:query,option:"i"}
+                    category:{$regex:query,$options:"i"}
                 }
             ]
         }).populate("shop","name image")

@@ -1,29 +1,29 @@
-import React, { use, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import { IoLocationSharp } from "react-icons/io5";
 import { IoMdSearch } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux'
 import { RxCross2 } from "react-icons/rx";
 import { serverUrl } from '../App';
-import { linkWithCredential } from 'firebase/auth';
-import { setUserData } from '../redux/userSlice';
+import { setUserData,setSearchItems  } from '../redux/userSlice';
 import axios from 'axios';
 import { FaPlus } from "react-icons/fa6";
 
 import { FaReceipt } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 
-
 const Nav = () => {
 
-    const { userData, currentCity ,cartItems} = useSelector(state => state.user)
+    const { userData, currentCity, cartItems  } = useSelector(state => state.user)
     const { myShopData } = useSelector(state => state.owner)
-    
+
+    const [query, setQuery] = useState("")
+
     const [showInfo, setShowInfo] = useState(false)
     const [showSearch, setShowSearch] = useState(false)
-    
+
     const dispatch = useDispatch()
-    const navigate=useNavigate()
+    const navigate = useNavigate()
 
     const handleLogOut = async () => {
         try {
@@ -38,6 +38,36 @@ const Nav = () => {
 
         }
     }
+
+
+    const handleSearchItems = async () => {
+        try {
+
+            const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, { withCredentials: true })
+
+            console.log(result.data)
+            dispatch(setSearchItems(result.data))
+
+        }
+        catch (error) {
+            console.log(error)
+
+
+        }
+    }
+
+    useEffect(() => {
+
+        if(query){
+
+            handleSearchItems()
+        }
+        else{
+
+            dispatch(setSearchItems(null))
+        }
+
+    }, [query])
     return (
         <>
             <div className='mx-auto my-2 w-[96%] h-[80px] flex items-center justify-between md:justify-center gap-[50px] px-[10px] fixed top-0 z-[9999] bg-purple-300/50 backdrop-blur-2xl  rounded-2xl overflow-hidden:'>
@@ -53,7 +83,7 @@ const Nav = () => {
                         </div>
                         <div className='flex w-[80%] items-center gap-[10px]'>
                             <IoMdSearch size={25} className='text-red-800/70' />
-                            <input className='w-full px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
+                            <input onChange={(e)=>setQuery(e.target.value) } value={query} className='w-full px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
 
 
                         </div>
@@ -61,9 +91,9 @@ const Nav = () => {
 
                 }
                 <h1 className='text-3xl font-bold mb-2 text-red-600/60'>
-                   <button onClick={()=>navigate("/")}>
-                    
-                     Anytime <span className='text-amber-900'>Craving</span>
+                    <button onClick={() => navigate("/")}>
+
+                        Anytime <span className='text-amber-900'>Craving</span>
                     </button>
 
                 </h1>
@@ -80,7 +110,7 @@ const Nav = () => {
                         </div>
                         <div className='flex w-[80%] items-center gap-[10px]'>
                             <IoMdSearch size={25} className='text-red-800/70' />
-                            <input className='w-full  px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
+                            <input onChange={(e) =>setQuery(e.target.value)} value={query} className='w-full  px-[10px] text-gray-700 outline-0' type="text" placeholder=' search delicious food....' />
 
 
                         </div>
@@ -102,13 +132,13 @@ const Nav = () => {
                             <>{
                                 myShopData &&
                                 <>
-                                    <button onClick={()=>navigate("/add-item")} className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
+                                    <button onClick={() => navigate("/add-item")} className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
                                         <FaPlus size={20} />
                                         <span>Add Food Item</span>
 
 
                                     </button>
-                                    <button onClick={()=>navigate("/add-item")} className=' md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
+                                    <button onClick={() => navigate("/add-item")} className=' md:hidden flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10  text-red-500'>
                                         <FaPlus size={20} />
 
 
@@ -116,20 +146,20 @@ const Nav = () => {
                                 </>
                             }
 
-                            
 
-                                <div onClick={()=>navigate("/my-order")} className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
+
+                                <div onClick={() => navigate("/my-order")} className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
                                     <span>My Orders</span>
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
 
                                 </div>
-                            
 
 
 
-                                
-                                <div onClick={()=>navigate("/my-order")} className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
+
+
+                                <div onClick={() => navigate("/my-order")} className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-red-500/10 text-red-500 font-medium'>
                                     <FaReceipt />
                                     <span className='absolute -top-2 -right-2 text-xs font-bold text-white bg-red-500 rounded-full px-[6px] py-[1px] '>  0</span>
 
@@ -138,17 +168,17 @@ const Nav = () => {
                             </> :
                             (
                                 <>
-                                    {userData.role=='user'&&
-                                    <div className='relative cursor-pointer' onClick={()=>{navigate("/cart")}}>
-                                        <FaShoppingCart size={25} className='text-red-800' />
-                                        <span className='absolute right-[-9px] top-[-12px] font-bold text-red-600' >{cartItems.length}</span>
+                                    {userData.role == 'user' &&
+                                        <div className='relative cursor-pointer' onClick={() => { navigate("/cart") }}>
+                                            <FaShoppingCart size={25} className='text-red-800' />
+                                            <span className='absolute right-[-9px] top-[-12px] font-bold text-red-600' >{cartItems.length}</span>
 
-                                    </div>
+                                        </div>
                                     }
 
 
 
-                                    <button onClick={()=>navigate("/my-order")} className='hidden md:block px-3 py-1 rounded-lg bg-red-500/30  backdrop-blur-2xl text-red-600  text-sm font-medium'> My Order</button>
+                                    <button onClick={() => navigate("/my-order")} className='hidden md:block px-3 py-1 rounded-lg bg-red-500/30  backdrop-blur-2xl text-red-600  text-sm font-medium'> My Order</button>
 
 
 
@@ -164,21 +194,21 @@ const Nav = () => {
 
                     {showInfo &&
 
-                        <div className={`fixed top-[80px] right-[10px] ${userData.role=="deliveryBoy"?"md:right-[20%] lg:right-[30%]":"md:right-[10%] lg:right-[25%]" }  w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]`}>
+                        <div className={`fixed top-[80px] right-[10px] ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[30%]" : "md:right-[10%] lg:right-[25%]"}  w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]`}>
 
                             <div className='text-[17px] font-semibold'>
-                                    {userData.fullName}
+                                {userData.fullName}
                             </div>
 
-                            {userData.role=="user" &&
-                                <div onClick={()=>navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
+                            {userData.role == "user" &&
+                                <div onClick={() => navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
 
-                            
-                            
-                            }     
 
-                                <div onClick={()=>navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
-                                <div onClick={handleLogOut} className='text-red-400 font-semibold cursor-pointer'>Log Out</div>
+
+                            }
+
+                            <div onClick={() => navigate("/my-order")} className='md:hidden text-red-400 font-semibold cursor-pointer'>My orders</div>
+                            <div onClick={handleLogOut} className='text-red-400 font-semibold cursor-pointer'>Log Out</div>
 
                         </div>
                     }
