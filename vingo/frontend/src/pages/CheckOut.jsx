@@ -34,7 +34,7 @@ const CheckOut = () => {
     const apiKey = import.meta.env.VITE_GEOAPIKEY
 
     const { location, address} = useSelector(state => state.map)
-    const { cartItems ,totalAmount} = useSelector(state => state.user)
+    const { cartItems ,totalAmount,userData} = useSelector(state => state.user)
 
     const [addressInput, setAddressInput] = useState("")
     const [paymentMethod, setPaymentMethod] = useState("cod")
@@ -66,13 +66,15 @@ const CheckOut = () => {
 
 
     const getCurrentLocation = () => {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude
-            const longitude = position.coords.longitude
+
+
+        const latitude=userData.location.coordinates[1]
+        const longitude=userData.location.coordinates[0]
+        
             dispatch(setLocation({ latitude: latitude, longitude: longitude }))
             getAddressByLatLng(latitude, longitude)
 
-        })
+        
 
     }
 
