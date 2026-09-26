@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "framer-motion": "^13.4.0",
+    "razorpay": "^2.9.8",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

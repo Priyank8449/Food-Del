@@ -3,10 +3,16 @@ import Order from "../models/orders.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import { sendDeliveryOtpMail } from "../utils/mail.js";
+import Razorpay from "razorpay";
+import dotenv from "dotenv"
 
 
 
-
+dotenv.config()
+let instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 
 export const placeOrder = async (req, res) => {
@@ -56,6 +62,25 @@ export const placeOrder = async (req, res) => {
             }
         })
         )
+
+        if (paymentMethod == "online") {
+            const razorOrder = instance.orders.create({
+                amount: Math.round(totalAmount * 100),
+                currency: 'INR',
+                receipt: `receipt_${Date.now()}`
+            })
+
+            const newOrder = await Order.create({
+                user: req.userId,
+                paymentMethod,
+                deliveryAddress,
+                totalAmount,
+                shopOrders,
+                razorpayOrderId: razorOrder.id,
+                payment: false
+            })
+ 
+        }
 
         const newOrder = await Order.create({
             user: req.userId,
@@ -505,13 +530,13 @@ export const sendDeliveryOtp = async (req, res) => {
 //         const { orderId, shopOrderId, otp } = req.body
 //         const order = await Order.findById(orderId).populate("user")
 
-        
+
 //         const shopOrder = order.shopOrders.id(shopOrderId)
-        
+
 //         if (!order || !shopOrder) {
 //             return res.status(400).json({ message: "order/shopOrder id is not valid" })
 //         }
-        
+
 
 //         if (shopOrder.deliveryOtp !== otp || !shopOrder.otpExpires || shopOrder.otpExpires<Date.now()){
 //             return res.status(400).json({message:"Invalid/Expired Otp"})
