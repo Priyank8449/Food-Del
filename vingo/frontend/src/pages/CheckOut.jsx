@@ -8,12 +8,13 @@ import "leaflet/dist/leaflet.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { setAddress, setLocation } from '../redux/mapSlice';
 import axios from 'axios';
-import { MdMobileFriendly } from "react-icons/md";
+import { MdDescription, MdMobileFriendly } from "react-icons/md";
 import { FaCreditCard } from "react-icons/fa";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { MdDeliveryDining } from "react-icons/md";
 import { serverUrl } from '../App';
 import { addMyOrder } from '../redux/userSlice';
+import { current } from '@reduxjs/toolkit';
 
 
 function ReCenterMap({ location }) {
@@ -28,20 +29,20 @@ function ReCenterMap({ location }) {
 
 const CheckOut = () => {
 
-    const  navigate=useNavigate()
+    const navigate = useNavigate()
 
     const dispatch = useDispatch()
     const apiKey = import.meta.env.VITE_GEOAPIKEY
 
-    const { location, address} = useSelector(state => state.map)
-    const { cartItems ,totalAmount,userData} = useSelector(state => state.user)
+    const { location, address } = useSelector(state => state.map)
+    const { cartItems, totalAmount, userData } = useSelector(state => state.user)
 
     const [addressInput, setAddressInput] = useState("")
     const [paymentMethod, setPaymentMethod] = useState("cod")
 
 
-    const deliveryFee=totalAmount>200?0:40
-    const amountWithDeliveryFee=totalAmount+deliveryFee
+    const deliveryFee = totalAmount > 200 ? 0 : 40
+    const amountWithDeliveryFee = totalAmount + deliveryFee
 
 
     const onDragEnd = (e) => {
@@ -68,13 +69,13 @@ const CheckOut = () => {
     const getCurrentLocation = () => {
 
 
-        const latitude=userData.location.coordinates[1]
-        const longitude=userData.location.coordinates[0]
-        
-            dispatch(setLocation({ latitude: latitude, longitude: longitude }))
-            getAddressByLatLng(latitude, longitude)
+        const latitude = userData.location.coordinates[1]
+        const longitude = userData.location.coordinates[0]
 
-        
+        dispatch(setLocation({ latitude: latitude, longitude: longitude }))
+        getAddressByLatLng(latitude, longitude)
+
+
 
     }
 
@@ -93,26 +94,81 @@ const CheckOut = () => {
 
     }
 
-    const handlePlaceOrder=async()=>{
-        try{
-            const  result= await axios.post(`${serverUrl}/api/order/place-order`,{
+    const handlePlaceOrder = async () => {
+        try {
+            const result = await axios.post(`${serverUrl}/api/order/place-order`, {
                 paymentMethod,
-                deliveryAddress:{
-                    text:addressInput,
-                    latitude:location.latitude,
-                    longitude:location.longitude
+                deliveryAddress: {
+                    text: addressInput,
+                    latitude: location.latitude,
+                    longitude: location.longitude
                 },
-                totalAmount,
+                totalAmount:amountWithDeliveryFee,
                 cartItems
-            },{withCredentials:true})
-            dispatch(addMyOrder(result.data))
+            }, { withCredentials: true })
 
-            navigate("/order-placed")
 
-        }catch(error){
+            if (paymentMethod == "cod") {
+                dispatch(addMyOrder(result.data))
+                navigate("/order-placed")
+            }
+            else {
+                const orderId = result.data.orderId
+                const razorOrder = result.data.razorOrder
+                openRazorpayWindow(orderId,razorOrder)
+
+            }
+
+
+        } catch (error) {
             console.log(error)
 
         }
+    }
+
+    const openRazorpayWindow = (orderId, razorOrder) => {
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: razorOrder.amount,
+            currency: 'INR',
+            name: 'Anytime Craving',
+            description: 'Food Delivery Website',
+
+            method:{
+
+                upi:true,
+                card:true,
+                netbanking:true,
+                wallet:true
+
+            },
+            order_id: razorOrder.id,
+            handler: async function (response) {
+                try {
+                    const result = await axios.post(`${serverUrl}/api/order/verify-payment`, {
+
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        orderId
+
+                    }, { withCredentials: true })
+
+                    dispatch(addMyOrder(result.data))
+                    navigate("/order-placed")
+
+                }
+                catch (error) {
+                    console.log(error)
+
+                }
+
+            }
+
+
+        }
+
+        const rzp = new window.Razorpay(options)
+        rzp.open()
+
     }
 
     useEffect(() => {
@@ -221,16 +277,16 @@ const CheckOut = () => {
 
                     <div className=' rounded-xl border bg-gray-50 p-4 space-y-2'>
 
-                        {cartItems.map((item,index)=>(
+                        {cartItems.map((item, index) => (
 
-                        <div className=' flex justify-between text-sm text-gray-700' key={index}>
-                            <span>{item.name} x {item.quantity}</span>
-                            <span>₹{item.price*item.quantity}</span>
+                            <div className=' flex justify-between text-sm text-gray-700' key={index}>
+                                <span>{item.name} x {item.quantity}</span>
+                                <span>₹{item.price * item.quantity}</span>
 
-                        </div>
+                            </div>
 
                         ))}
-                        <hr  className='border-gray-400 my-2'/>
+                        <hr className='border-gray-400 my-2' />
 
                         <div className='flex justify-between font-medium text-gray-800'>
                             <span>Subtotal</span>
@@ -238,7 +294,7 @@ const CheckOut = () => {
                         </div>
                         <div className='flex justify-between text-gray-700'>
                             <span>Delivery Fee</span>
-                            <span>{deliveryFee==0?"Free":deliveryFee}</span>
+                            <span>{deliveryFee == 0 ? "Free" : deliveryFee}</span>
                         </div>
 
 
@@ -246,8 +302,8 @@ const CheckOut = () => {
                             <span> Total </span>
                             <span>₹{amountWithDeliveryFee}</span>
                         </div>
-                        
-                        
+
+
 
 
                     </div>
@@ -256,7 +312,7 @@ const CheckOut = () => {
                 </section>
 
 
-                <button onClick={handlePlaceOrder} className='w-full bg-red-500 hover:bg-red-800 text-white py-3 rounded-xl font-semibold shadow-2xl shadow-black'>{paymentMethod=="cod"?"Place Order":"Pay & Place Order"}</button>
+                <button onClick={handlePlaceOrder} className='w-full bg-red-500 hover:bg-red-800 text-white py-3 rounded-xl font-semibold shadow-2xl shadow-black'>{paymentMethod == "cod" ? "Place Order" : "Pay & Place Order"}</button>
             </div>
 
         </div>
