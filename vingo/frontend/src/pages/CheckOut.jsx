@@ -94,6 +94,8 @@ const CheckOut = () => {
 
     }
 
+    
+
     const handlePlaceOrder = async () => {
         try {
             const result = await axios.post(`${serverUrl}/api/order/place-order`, {
