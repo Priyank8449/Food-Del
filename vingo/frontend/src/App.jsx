@@ -21,6 +21,7 @@ import useGetMyOrder from '../hooks/useGetMyOrder'
 import useUpdateLocation from '../hooks/useUpdateLocation'
 import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
+import { useEffect } from 'react'
 
 
 export const  serverUrl="http://localhost:3200"
@@ -32,6 +33,10 @@ const App = () => {
  useGetItemByCity()
  useGetMyOrder()
  useUpdateLocation()
+
+ useEffect(()=>{
+
+ },[])
   const {userData}=useSelector(state=>state.user)
   return (
     <>

@@ -12,7 +12,9 @@ const userSlice = createSlice({
         cartItems: [],
         totalAmount: 0,
         myOrders:[],
-        searchItems:null
+        searchItems:null,
+        socket:null
+
 
 
     },
@@ -88,6 +90,9 @@ const userSlice = createSlice({
         },
         setSearchItems:(state,action)=>{
             state.searchItems=action.payload
+
+        },
+        setSocket:(state,action)={
 
         }
 
