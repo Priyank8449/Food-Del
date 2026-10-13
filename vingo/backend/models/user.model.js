@@ -39,6 +39,10 @@ const userSchema=new mongoose.Schema({
         type:String
 
     },
+    isOnline:{
+        type:Boolean,
+        default:false
+    },
 
     location:{
         type:{type:String,enum:['Point'],default:'Point'},

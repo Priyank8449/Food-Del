@@ -94,7 +94,7 @@ const CheckOut = () => {
 
     }
 
-    
+     
 
     const handlePlaceOrder = async () => {
         try {
