@@ -82,9 +82,9 @@ export const placeOrder = async (req, res) => {
 
             return res.status(200).json({
                 razorOrder,
-                orderId:newOrder._id,
+                orderId: newOrder._id,
             })
- 
+
         }
 
         const newOrder = await Order.create({
@@ -96,7 +96,32 @@ export const placeOrder = async (req, res) => {
         })
 
         await newOrder.populate("shopOrders.shopOrderItems.item", "name image price")
-        await newOrder.populate("shopOrders.shop", "name")
+        await newOrder.populate("shopOrders.shop", "name socketId")
+        await newOrder.populate("user", "name email mobile ")
+
+        const io = req.app.get('io')
+        if (io) {
+            newOrder.shopOrder.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.ownerSocketId
+                if (ownerSocketId) {
+                    io.to(ownerSocketId).emit('newOrder', {
+
+                        _id: newOrder._id,
+                        paymentMethod: newOrder.paymentMethod,
+                        user: newOrder.user,
+                        shopOrders: shopOrder,
+                        createAt: newOrder.createdAt,
+                        deliveryAddress: newOrder.deliveryAddress,
+                        payment: newOrder.payment
+                    })
+                }
+
+            })
+
+        }
+
+
+
 
         return res.status(201).json(newOrder)
 
@@ -109,39 +134,39 @@ export const placeOrder = async (req, res) => {
 
 
 
-export const verifyPayment=async(req,res)=>{
-    try{
-        const {razorpay_payment_id,orderId}=req.body;
+export const verifyPayment = async (req, res) => {
+    try {
+        const { razorpay_payment_id, orderId } = req.body;
 
-        const payment=await instance.payments.fetch(razorpay_payment_id)
+        const payment = await instance.payments.fetch(razorpay_payment_id)
 
-        if(!payment || payment.status!="captured"){
-            return res.status(400).json({message:"payment not captured"})
-            
+        if (!payment || payment.status != "captured") {
+            return res.status(400).json({ message: "payment not captured" })
+
         }
-        
-        const order =await Order.findById(orderId)
-        
-        if(!order){
-            return res.status(400).json({message:"order not found"})
-            
+
+        const order = await Order.findById(orderId)
+
+        if (!order) {
+            return res.status(400).json({ message: "order not found" })
+
         }
-        order.payment=true
-        order.razorpayPaymentId=razorpay_payment_id
+        order.payment = true
+        order.razorpayPaymentId = razorpay_payment_id
         await order.save()
-        
-        
-        
-        await order.populate("shopOrders.shopOrderItems.item"," name image price")
-        await order.populate("shopOrders.shop"," name")
-        
+
+
+
+        await order.populate("shopOrders.shopOrderItems.item", " name image price")
+        await order.populate("shopOrders.shop", " name")
+
         return res.status(200).json(order)
-        
-        
-        
+
+
+
     }
-    catch(error){
-        return res.status(500).json({message:"verify  payment err "})
+    catch (error) {
+        return res.status(500).json({ message: "verify  payment err " })
 
     }
 }
@@ -179,7 +204,7 @@ export const getMyOrders = async (req, res) => {
                 shopOrders: order.shopOrders.find(o => o.owner._id == req.userId),
                 createAt: order.createdAt,
                 deliveryAddress: order.deliveryAddress,
-                payment:order.payment
+                payment: order.payment
             })))
 
             return res.status(200).json(filteredOrders)
