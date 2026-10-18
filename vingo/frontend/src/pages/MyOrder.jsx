@@ -22,7 +22,7 @@ const MyOrder = () => {
        }
     })
     return()=>{
-      socket.off("newOrder")
+      socket?.off("newOrder")
     }
 
   },[socket])

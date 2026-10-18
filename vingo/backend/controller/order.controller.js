@@ -96,13 +96,14 @@ export const placeOrder = async (req, res) => {
         })
 
         await newOrder.populate("shopOrders.shopOrderItems.item", "name image price")
-        await newOrder.populate("shopOrders.shop", "name socketId")
+        await newOrder.populate("shopOrders.shop", "name ")
+        await newOrder.populate("shopOrders.owner", "socketId ")
         await newOrder.populate("user", "name email mobile ")
 
         const io = req.app.get('io')
         if (io) {
-            newOrder.shopOrder.forEach(shopOrder => {
-                const ownerSocketId = shopOrder.owner.ownerSocketId
+            newOrder.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId
                 if (ownerSocketId) {
                     io.to(ownerSocketId).emit('newOrder', {
 

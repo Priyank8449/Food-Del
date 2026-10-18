@@ -40,15 +40,15 @@ const App = () => {
  const {userData}=useSelector(state=>state.user)
 
  useEffect(()=>{
- const socektInstance=io(serverUrl,{withCredentials:true})
- dispatch(setSocket(socektInstance))
- socektInstance.on('connect',()=>{
+ const socketInstance=io(serverUrl,{withCredentials:true})
+ dispatch(setSocket(socketInstance))
+ socketInstance.on('connect',()=>{
   if(userData){
-    socektInstance.emit('identity',{userId:userData._id})
+    socketInstance.emit('identity',{userId:userData._id})
   }
  })
  return ()=>{
-  socektInstance.disconnect()
+  socketInstance.disconnect()
  }
 
  },[userData?._id])
