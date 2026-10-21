@@ -158,8 +158,33 @@ export const verifyPayment = async (req, res) => {
 
 
 
-        await order.populate("shopOrders.shopOrderItems.item", " name image price")
-        await order.populate("shopOrders.shop", " name")
+        
+
+       await order.populate("shopOrders.shopOrderItems.item", "name image price")
+        await order.populate("shopOrders.shop", "name ")
+        await order.populate("shopOrders.owner", "socketId ")
+        await order.populate("user", "name email mobile ")
+
+        const io = req.app.get('io')
+        if (io) {
+            order.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId
+                if (ownerSocketId) {
+                    io.to(ownerSocketId).emit('newOrder', {
+
+                        _id: order._id,
+                        paymentMethod: order.paymentMethod,
+                        user: order.user,
+                        shopOrders: shopOrder,
+                        createAt: order.createdAt,
+                        deliveryAddress: order.deliveryAddress,
+                        payment: order.payment
+                    })
+                }
+
+            })
+
+        }
 
         return res.status(200).json(order)
 
