@@ -351,10 +351,27 @@ export const updateOrderStatus = async (req, res) => {
         await shopOrder.save()
         await order.save()
 
+         const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId)
         await order.populate("shopOrders.shop", "name  ")
         await order.populate("shopOrders.assignedDeliveryBoy", "fullName email mobile  ")
+        await order.populate("user", "socketId")
 
-        const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId)
+
+        const  io= req.app.get('io')
+
+        if(io){
+            const  userSocketId= order.user.socketId
+            if(userSocketId){
+                io.to(userSocketId).emit("updateStatus",{
+                    orderId:order._id,
+                    shopId:updatedShopOrder.shop._id,
+                    status:updatedShopOrder.status,
+                    userId:order.user._id
+
+                })
+            }
+            
+        }
 
 
 

@@ -7,7 +7,7 @@ import UserOrderCard from '../component/UserOrderCard';
 import OwnerOrderCard from '../component/OwnerOrderCard';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
-import { setMyOrder } from '../redux/userSlice';
+import { setMyOrder, updateRealTimeOrderStatus } from '../redux/userSlice';
 
 const MyOrder = () => {
   const { userData, myOrders,socket } = useSelector(state => state.user)
@@ -16,13 +16,22 @@ const MyOrder = () => {
   const dispatch= useDispatch()
 
   useEffect(()=>{
-    socket.on("newOrder",(data)=>{
+    socket?.on("newOrder",(data)=>{
        if(data.shopOrders?.owner._id==userData._id){
         dispatch(setMyOrder([data,...myOrders]))
        }
     })
+
+    socket?.on('updateStatus',({orderId,shopId,status,userId})=>{
+
+      if(userId==userData._id){
+        dispatch(updateRealTimeOrderStatus({orderId,shopId,status}))
+      }
+
+    })
     return()=>{
       socket?.off("newOrder")
+      socket?.off("updateStatus")
     }
 
   },[socket])
