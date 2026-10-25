@@ -10,7 +10,7 @@ import DeliveryBoyTracking from './deliveryBoyTracking'
 const DeliverBoyDashboard = () => {
 
 
-  const { userData } = useSelector(state => state.user)
+  const { userData,socket } = useSelector(state => state.user)
   const [currentOrder, setCurrentOrder] = useState()
   const [availabeAssignment, setAvailableAssignment] = useState([])
 
@@ -90,6 +90,18 @@ const DeliverBoyDashboard = () => {
     }
   }
 
+
+  useEffect(()=>{
+    socket.on('newAssignment',(data)=>{
+      if(data.sentTo==userData._id){
+        setAvailableAssignment(prev=>[...prev,data])
+      }
+    })
+    return()=>{
+      socket?.off('newAssignment')
+    }
+
+  },[socket])
 
 
 
