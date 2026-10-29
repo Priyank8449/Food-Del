@@ -5,14 +5,17 @@ import axios from 'axios'
 import { IoMdArrowBack } from "react-icons/io";
 import { current } from '@reduxjs/toolkit';
 import DeliveryBoyTracking from '../component/deliveryBoyTracking';
+import { useSelector } from 'react-redux';
 
 const TrackOrderPage = () => {
 
     const { orderId } = useParams()
     const navigate = useNavigate()
+    const { socket } = useSelector(state => state.user)
 
 
     const [currentOrder, setCurrentOrder] = useState()
+    const [liveLocation, setLiveLocation] = useState({})
 
 
     const handleGetOrder = async () => {
@@ -36,6 +39,19 @@ const TrackOrderPage = () => {
     }
 
     useEffect(() => {
+        socket.on("updateDeliveryLocation", ({ deliveryBoyId, latitude, longitude })=>{
+             setLiveLocation(prev => ({
+            ...prev,
+            [deliveryBoyId]: { lat: latitude, lon: longitude }
+        }))
+
+        })
+
+       
+
+    }, [socket])
+
+    useEffect(() => {
 
         handleGetOrder()
 
@@ -51,55 +67,57 @@ const TrackOrderPage = () => {
 
             </div>
 
-            {currentOrder?.shopOrders?.map((shopOrder,index)=>(
+            {currentOrder?.shopOrders?.map((shopOrder, index) => (
                 <div className='bg-white p-4 rounded-2xl shadow-md border border-orange-300 space-y-4' key={index}>
 
                     <div>
                         <p className='text-lg font-bold mb-2 text-red-500'>{shopOrder.shop.name}</p>
-                        <p className=''><span className='font-semibold'>Items:</span>{shopOrder.shopOrderItems?.map(i=>i.name).join(",")}</p>
-                    
-                    <p><span className='font-semibold'>Subtotal:</span>{shopOrder.subtotal}</p>
+                        <p className=''><span className='font-semibold'>Items:</span>{shopOrder.shopOrderItems?.map(i => i.name).join(",")}</p>
 
-                    <p><span className='font-semibold'>Delivery Address:</span>{currentOrder.deliveryAddress.text}</p>
+                        <p><span className='font-semibold'>Subtotal:</span>{shopOrder.subtotal}</p>
+
+                        <p><span className='font-semibold'>Delivery Address:</span>{currentOrder.deliveryAddress.text}</p>
                     </div>
 
-                    {shopOrder.status!="Delivered"?<>
+                    {shopOrder.status != "Delivered" ? <>
 
-                    {shopOrder.assignedDeliveryBoy?
-                    <div className='text-sm text-gray-700'>
-                        <p className='font-semibold'><span>Delivery Boy Name: </span>{shopOrder.assignedDeliveryBoy.fullName}</p>
-                        <p className='font-semibold'><span>Delivery Boy Contact No : </span>{shopOrder.assignedDeliveryBoy.mobile}</p>
-
-
-                    </div>:
-                    <p className='font-semibold'>Delivery Boy  is not assigned yet</p>
-                    
-                    }
-                    
-                    </>:
-                    <p className='text-green-500 font-semibold text-lg'>Delivered</p>}
+                        {shopOrder.assignedDeliveryBoy ?
+                            <div className='text-sm text-gray-700'>
+                                <p className='font-semibold'><span>Delivery Boy Name: </span>{shopOrder.assignedDeliveryBoy.fullName}</p>
+                                <p className='font-semibold'><span>Delivery Boy Contact No : </span>{shopOrder.assignedDeliveryBoy.mobile}</p>
 
 
-<div></div>
+                            </div> :
+                            <p className='font-semibold'>Delivery Boy  is not assigned yet</p>
 
-                    {(shopOrder.assignedDeliveryBoy&& shopOrder.status!=="Delivered" )&&
+                        }
 
-                    <div className='h-[400px] w-full rounded-2xl overflow-hidden shadow-md'>
+                    </> :
+                        <p className='text-green-500 font-semibold text-lg'>Delivered</p>}
 
 
-                    <DeliveryBoyTracking data={{
-                        deliveryBoyLocation:{
-                            lat:shopOrder.assignedDeliveryBoy.location.coordinates[1],
-                            lon:shopOrder.assignedDeliveryBoy.location.coordinates[0],
-                    },
-                    customerLocation:{
-                        lat:currentOrder.deliveryAddress.latitude,
-                        lon:currentOrder.deliveryAddress.longitude
-                    }
-                    }}
-                    
-                    />
-                    </div>
+                    <div></div>
+
+                    {(shopOrder.assignedDeliveryBoy && shopOrder.status !== "Delivered") &&
+
+                        <div className='h-[400px] w-full rounded-2xl overflow-hidden shadow-md'>
+
+
+                            <DeliveryBoyTracking data={{ 
+                                deliveryBoyLocation: liveLocation[shopOrder.assignedDeliveryBoy._id] ||
+                                {
+
+                                    lat: shopOrder.assignedDeliveryBoy.location.coordinates[1],
+                                    lon: shopOrder.assignedDeliveryBoy.location.coordinates[0],
+                                },
+                                customerLocation: {
+                                    lat: currentOrder.deliveryAddress.latitude,
+                                    lon: currentOrder.deliveryAddress.longitude
+                                }
+                            }}
+
+                            />
+                        </div>
                     }
 
 
@@ -107,7 +125,7 @@ const TrackOrderPage = () => {
             ))}
 
 
-            
+
 
 
 

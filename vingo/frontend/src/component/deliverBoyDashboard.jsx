@@ -18,6 +18,38 @@ const DeliverBoyDashboard = () => {
   const [otp, setOtp] = useState("")
 
 
+  useEffect(()=>{
+    if(!socket || userData.role!=="deliveryBoy"){
+      return
+    }
+    let watchId
+
+    
+    if(navigator.geolocation){
+      watchId= navigator.geolocation.watchPosition((position)=>{
+        const latitude=position.coords.latitude
+        const longitude=position.coords.longitude
+
+        socket.emit("updateLocation",{
+          latitude,
+          longitude,
+          userId:userData._id
+        })
+       }),
+       (error)=>{
+        console.log(error)
+       },{
+        enableHighAccuracy:true
+       }
+    }
+
+    return()=>{
+      if(watchId)navigator.geolocation.clearWatch(watchId)
+    }
+
+  },[socket,userData])
+
+
   const getAssignment = async () => {
     try {
 
