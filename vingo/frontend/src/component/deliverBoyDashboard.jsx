@@ -10,44 +10,50 @@ import DeliveryBoyTracking from './deliveryBoyTracking'
 const DeliverBoyDashboard = () => {
 
 
-  const { userData,socket } = useSelector(state => state.user)
+  const { userData, socket } = useSelector(state => state.user)
   const [currentOrder, setCurrentOrder] = useState()
   const [availabeAssignment, setAvailableAssignment] = useState([])
 
   const [showOtpBox, setShowOtpBox] = useState(false)
   const [otp, setOtp] = useState("")
+  const [deliveryBoyLocation, setDeleveryBoyLocation] = useState(null)
 
 
-  useEffect(()=>{
-    if(!socket || userData.role!=="deliveryBoy"){
+  useEffect(() => {
+    if (!socket || userData.role !== "deliveryBoy") {
       return
     }
     let watchId
 
-    
-    if(navigator.geolocation){
-      watchId= navigator.geolocation.watchPosition((position)=>{
-        const latitude=position.coords.latitude
-        const longitude=position.coords.longitude
 
-        socket.emit("updateLocation",{
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition((position) => {
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
+
+        setDeleveryBoyLocation({
+          lat:latitude,
+          lon:longitude
+        })
+
+        socket.emit("updateLocation", {
           latitude,
           longitude,
-          userId:userData._id
+          userId: userData._id
         })
-       }),
-       (error)=>{
-        console.log(error)
-       },{
-        enableHighAccuracy:true
-       }
+      }),
+        (error) => {
+          console.log(error)
+        }, {
+        enableHighAccuracy: true
+      }
     }
 
-    return()=>{
-      if(watchId)navigator.geolocation.clearWatch(watchId)
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId)
     }
 
-  },[socket,userData])
+  }, [socket, userData])
 
 
   const getAssignment = async () => {
@@ -85,10 +91,10 @@ const DeliverBoyDashboard = () => {
   const sendOtp = async () => {
 
     try {
-      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp`,{
-        orderId:currentOrder._id,shopOrderId:currentOrder.shopOrder._id
+      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp`, {
+        orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id
       }, { withCredentials: true })
-          setShowOtpBox(true);
+      setShowOtpBox(true);
 
 
       console.log(result.data)
@@ -100,8 +106,8 @@ const DeliverBoyDashboard = () => {
   const verifyOtp = async () => {
 
     try {
-      const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`,{
-        orderId:currentOrder._id,shopOrderId:currentOrder.shopOrder._id,otp
+      const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`, {
+        orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id, otp
       }, { withCredentials: true })
 
       console.log(result.data)
@@ -123,17 +129,17 @@ const DeliverBoyDashboard = () => {
   }
 
 
-  useEffect(()=>{
-    socket.on('newAssignment',(data)=>{
-      if(data.sentTo==userData._id){
-        setAvailableAssignment(prev=>[...prev,data])
+  useEffect(() => {
+    socket.on('newAssignment', (data) => {
+      if (data.sentTo == userData._id) {
+        setAvailableAssignment(prev => [...prev, data])
       }
     })
-    return()=>{
+    return () => {
       socket?.off('newAssignment')
     }
 
-  },[socket])
+  }, [socket])
 
 
 
@@ -155,7 +161,7 @@ const DeliverBoyDashboard = () => {
         <div className=' bg-white/10 backdrop-blur-2xl rounded-2xl shadow-xl p-5 flex flex-col gap-3 text-center justify-start items-center w-[90%] border border-orange-200 '>
 
           <h1 className='text-xl font-bold text-blue-900' >Welcome, {userData.fullName}</h1>
-          <p className='text-blue-400' > <span className='font-semibold'>Latitude</span>:{userData.location.coordinates[1]},<span className='font-semibold'> Longitude</span>:{userData.location.coordinates[0]}</p>
+          <p className='text-blue-400' > <span className='font-semibold'>Latitude</span>:{deliveryBoyLocation?.lat},<span className='font-semibold'> Longitude</span>:{deliveryBoyLocation?.lon}</p>
 
 
         </div>
@@ -209,7 +215,19 @@ const DeliverBoyDashboard = () => {
               <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length}items | {currentOrder.shopOrder.subtotal}</p>
             </div>
 
-            <DeliveryBoyTracking data={currentOrder} />
+            <DeliveryBoyTracking data={{
+
+              deliveryBoyLocation:deliveryBoyLocation||
+              {
+
+                lat: userData.location.coordinates[1],
+                lon: userData.location.coordinates[0],
+              },
+              customerLocation: {
+                lat: currentOrder.deliveryAddress.latitude,
+                lon: currentOrder.deliveryAddress.longitude
+              }
+            }} />
 
             {!showOtpBox ?
 
@@ -218,7 +236,7 @@ const DeliverBoyDashboard = () => {
               <div className='mt-4 p-4 border rounded-xl bg-gray-100'>
 
                 <p className='text-sm font-semibold mb-2'>Enter Otp sent to <span className='text-blue-600 font-bold'>{currentOrder.user.fullName}</span></p>
-                <input onChange={(e)=>setOtp(e.target.value)} value={otp} type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter Otp-XXXX' />
+                <input onChange={(e) => setOtp(e.target.value)} value={otp} type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter Otp-XXXX' />
                 <button onClick={verifyOtp} className=' w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition-all'>Submit Otp</button>
 
 
