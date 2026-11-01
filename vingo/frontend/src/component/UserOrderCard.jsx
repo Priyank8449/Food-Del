@@ -1,8 +1,17 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { serverUrl } from '../App'
+
+
+import axios from 'axios'
+import { CiStar } from "react-icons/ci";
+
 
 const UserOrderCard = ({ data }) => {
+
+    const[selectedRating,setSelectedRating]=useState({})
     const formatDate = (dateString) => {
         const date = new Date(dateString)
         return date.toLocaleString('en-GB',
@@ -12,6 +21,23 @@ const UserOrderCard = ({ data }) => {
                 year: "numeric"
             })
 
+    }
+
+
+    const handleRating=async(itemId,rating)=>{
+        try{
+            const result=await axios.post(`${serverUrl}/api/item/rating`,{itemId,rating},{withCredentials:true})
+
+            setSelectedRating(prev=>({
+                ...prev,[itemId]:rating
+            }))
+
+        }
+        catch(error){
+            console.log(error)
+
+        }
+        
     }
 
     const navigate=useNavigate()
@@ -51,6 +77,26 @@ const UserOrderCard = ({ data }) => {
                                 <img className='w-full h-24 object-cover rounded' src={item.item?.image} alt="" />
                                 <p className='text-sm font-semibold mt-1'>{item.name}</p>
                                 <p className='text-xs text-gray-700'>{item.quantity} X ₹{item.price}</p>
+
+
+                                {/* rating */}
+
+                                {shoporder.status=="Delivered" &&
+
+                                <div>
+
+                                   { [1,2,3,4,5].map((star)=>(
+                                        <button onClick={() => handleRating(item.item._id, star)} className={` text-lg ${selectedRating[item.item._id] >=star? 'text-yellow-400':'text-gray-400'}`}>★</button>
+                                    ))}
+
+
+                                </div>
+                                
+                                
+                                
+                                }
+
+
 
 
                             </div>

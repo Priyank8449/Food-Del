@@ -6,6 +6,7 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 export const addItem = async (req, res) => {
     try {
         console.log("REQ.BODY:", req.body);
+        
         console.log("REQ.FILE:", req.file);
         console.log("REQ.USER ID:", req.userId);
         const { name, category, foodType, price } = req.body
@@ -241,6 +242,43 @@ export const searchItems=async(req,res)=>{
     }
     catch{
                 return res.status(500).json({message:" search item error"})
+
+    }
+}
+
+
+
+export const  rating=async(req,res)=>{
+    try{
+
+        const{itemId,rating}= req.body;
+
+        if(!itemId ||!rating){
+            return  res.status(400).json({message:"item  id and raiting is required"})
+        }
+
+        if(rating<1 || rating>5){
+            return  res.status(400).json({message:"rating must be between  1 to  5"})
+        }
+
+        const item  =  await Item.findById(itemId)
+        if(!item){
+            return  res.status(400).json({message:"item  not found"})
+        }
+
+        const newCount=  item.rating.count +1;
+        const newAverage=( item.rating.average*item.rating.count + rating )/newCount
+
+        item.rating.count=  newCount
+        item.rating.average= newAverage
+
+
+        await item.save()
+
+        return res.status(200).json({rating:item.rating})
+
+    }catch(error){
+        return res.status(500).json({message:"rating error"})
 
     }
 }
