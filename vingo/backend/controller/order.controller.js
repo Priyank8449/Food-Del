@@ -770,3 +770,63 @@ export const verifyDeliveryOtp = async (req, res) => {
     }
 }
 
+
+
+export const getTodayDelivery=async(req,res)=>{
+
+    try{
+
+        const  deliveryBoyId=req.userId;
+        const startsDay=new Date()
+
+        startsDay.setHours(0,0,0,0)
+
+        const order=  await Order.find({
+            "shopOrders.assignedDeliveryBoy":deliveryBoyId,
+            "shopOrders.status":"Delivered",
+            "shopOrders.deliveredAt":{$gte:startsDay}
+        }).lean()
+
+
+        let todaysDelivery=[]
+
+        orders.forEach(order=>{
+            order.shopOrders.forEach(shopOrder=>{
+                if(shopOrder.assignedDeliveryBoy==deliveryBoyId && 
+                    shopOrder.status=="Delivered" &&
+                    shopOrder.deliverdAt &&
+                    shopOrder.deliverdAt>= startsDay
+                ){
+                    todaysDelivery.push(shopOrder)
+                }
+            })
+        })
+
+        let  stats={}
+
+        todaysDelivery.forEach(shopOrder=>{
+            const hour= new Date(shopOrder.deliverdAt).getHours()
+
+            stats[hour]=(stats[hour] || 0 )+1
+
+        })
+
+        let formatedStats=Object.keys(stats).map(hour=>({
+            hour:parseInt(hour),
+            count:stats[hour]
+        }))
+
+
+        formatedStats.sort((a,b)=>a.hour-b.hour)
+
+        return res.status(200).json(formatedStats)
+
+        
+
+
+    }catch(error){
+        return res.status(500).json({message:"todays delivery  error"})
+
+    }
+
+}

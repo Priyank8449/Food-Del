@@ -1,4 +1,4 @@
-import { acceptOrder, getCurrentOrder, getDeliveryBoyAssignment, getMyOrders, getOrderById, placeOrder, sendDeliveryOtp, updateOrderStatus, verifyDeliveryOtp, verifyPayment } from "../controller/order.controller.js"
+import { acceptOrder, getCurrentOrder, getDeliveryBoyAssignment, getMyOrders, getOrderById, getTodayDelivery, placeOrder, sendDeliveryOtp, updateOrderStatus, verifyDeliveryOtp, verifyPayment } from "../controller/order.controller.js"
 import isAuth from "../middleware/isAuth.js"
 import express from 'express'
 
@@ -14,6 +14,7 @@ orderRouter.post("/verify-delivery-otp",isAuth,verifyDeliveryOtp)
 orderRouter.post("/update-status/:orderId/:shopId",isAuth,updateOrderStatus)
 orderRouter.get("/accept-order/:assignmentId",isAuth,acceptOrder)
 orderRouter.get("/get-order-by-id/:orderId",isAuth,getOrderById)
+orderRouter.get("/get-today-delivery/",isAuth,getTodayDelivery)
 
 
 export default orderRouter
