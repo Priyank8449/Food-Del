@@ -18,6 +18,8 @@ const DeliverBoyDashboard = () => {
   const [otp, setOtp] = useState("")
   const [deliveryBoyLocation, setDeleveryBoyLocation] = useState(null)
 
+  const [todayDelivery,setTodayDelivery]=useState([])
+
 
   useEffect(() => {
     if (!socket || userData.role !== "deliveryBoy") {
@@ -124,7 +126,27 @@ const DeliverBoyDashboard = () => {
       setCurrentOrder(result.data)
 
     } catch (error) {
+        console.error(
+            "Current order error:",
+            error.response?.data || error.message
+        );
 
+        setCurrentOrder(null);
+
+    }
+  }
+
+
+   const handleTodayDelivery = async () => {
+
+    try {
+      const result = await axios.get(`${serverUrl}/api/order/get-today-delivery`, { withCredentials: true })
+
+      console.log(result.data)
+      setTodayDelivery(result.data)
+
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -149,6 +171,7 @@ const DeliverBoyDashboard = () => {
   useEffect(() => {
     getAssignment()
     getCurrentOrder()
+    handleTodayDelivery()
   }, [userData])
   return (
     <div className=' bg-sky-100 w-full min-h-screen flex flex-col items-center overflow-x-hidden'>

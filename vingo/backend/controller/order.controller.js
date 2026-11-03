@@ -509,7 +509,7 @@ export const acceptOrder = async (req, res) => {
 
 
     }
-    catch {
+    catch (error){
 
         return res.status(500).json({ message: "  accept order err", error: error.message })
 
@@ -532,10 +532,10 @@ export const getCurrentOrder = async (req, res) => {
             })
 
         if (!assignment) {
-            return res.status(500).json({ message: "assignment not found" })
+            return res.status(400).json({ message: "assignment not found" })
         }
         if (!assignment.order) {
-            return res.status(500).json({ message: "order not found" })
+            return res.status(400).json({ message: "order not found" })
         }
 
 
@@ -543,13 +543,13 @@ export const getCurrentOrder = async (req, res) => {
 
 
         if (!shopOrder) {
-            return res.status(500).json({ message: " shop order not found" })
+            return res.status(400).json({ message: " shop order not found" })
 
         }
 
         let deliveryBoyLocation = { lat: null, lon: null }
 
-        if (assignment.assignedTo.location.coordinates.length == 2) {
+        if (assignment.assignedTo.location?.coordinates?.length == 2) {
             deliveryBoyLocation.lat = assignment.assignedTo.location.coordinates[1];
             deliveryBoyLocation.lon = assignment.assignedTo.location.coordinates[0];
         }
@@ -564,8 +564,8 @@ export const getCurrentOrder = async (req, res) => {
         }
 
         return res.status(200).json({
-            _id: assignment.order._id,
-            user: assignment.order.user,
+            _id: assignment.order?._id,
+            user: assignment.order?.user,
             shopOrder,
             deliveryAddress: assignment.order.deliveryAddress,
             deliveryBoyLocation,
@@ -620,7 +620,7 @@ export const getOrderById = async (req, res) => {
     }
     catch (error) {
 
-        return res.status(500).json({ message: "get order by  id error" })
+        return res.status(400).json({ message: "get order by  id error" })
 
 
     }
@@ -744,7 +744,7 @@ export const verifyDeliveryOtp = async (req, res) => {
 
         // Mark order as delivered
         shopOrder.status = "Delivered"
-        shopOrder.deliverdAt = Date.now()
+        shopOrder.deliveredAt = Date.now()
 
         await order.save()
 
@@ -790,12 +790,12 @@ export const getTodayDelivery=async(req,res)=>{
 
         let todaysDelivery=[]
 
-        orders.forEach(order=>{
+        order.forEach(order=>{
             order.shopOrders.forEach(shopOrder=>{
                 if(shopOrder.assignedDeliveryBoy==deliveryBoyId && 
                     shopOrder.status=="Delivered" &&
-                    shopOrder.deliverdAt &&
-                    shopOrder.deliverdAt>= startsDay
+                    shopOrder.deliveredAt &&
+                    shopOrder.deliveredAt>= startsDay
                 ){
                     todaysDelivery.push(shopOrder)
                 }
@@ -805,7 +805,7 @@ export const getTodayDelivery=async(req,res)=>{
         let  stats={}
 
         todaysDelivery.forEach(shopOrder=>{
-            const hour= new Date(shopOrder.deliverdAt).getHours()
+            const hour= new Date(shopOrder.deliveredAt).getHours()
 
             stats[hour]=(stats[hour] || 0 )+1
 
