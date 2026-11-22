@@ -1,9 +1,10 @@
-import express from  "express"
-import dotenv from "dotenv"
+
+import express from "express";
+import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
-import cors from "cors"
+import cors from "cors";
 import userRouter from "./routes/user.routes.js";
 import shopRouter from "./routes/shop.routes.js";
 import itemRouter from "./routes/item.routes.js";
@@ -13,46 +14,60 @@ import http from "http";
 import { Server } from "socket.io";
 import socketHandler from "./socket.js";
 
+dotenv.config();
 
-const  app= express();
-const server=http.createServer(app)
+const app = express();
+const server = http.createServer(app);
 
-const io=new Server(server,{
-    cors:{
-    origin:"http://localhost:5173",
-    credentials:true,
-    methods:['POST','GET']
-}
+const port = process.env.PORT || 5000;
 
-})
+// Allowed frontend URLs
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://food-del-2nqd.vercel.app"
+];
 
-app.set("io",io)
+// Socket.IO configuration
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ["GET", "POST"]
+  }
+});
 
+app.set("io", io);
 
-dotenv.config()
-const port=process.env.PORT||5000
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(express.json())
-app.use(cookieParser())
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}))
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+}));
 
+// Test route
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Vingo Backend is running successfully"
+  });
+});
 
+// API Routes
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/shop", shopRouter);
+app.use("/api/item", itemRouter);
+app.use("/api/order", orderRouter);
 
-app.use("/api/auth",authRouter)
-app.use("/api/user",userRouter)
-app.use("/api/shop",shopRouter)
-app.use("/api/item",itemRouter)
-app.use("/api/order",orderRouter)
- 
+// Socket events
+socketHandler(io);
 
-
-socketHandler(io)
-
-server.listen(port,()=>{
-    connectDb()
-    console.log(`server started at ${port}`)
-
-})
+// Start server
+server.listen(port, "0.0.0.0", () => {
+  connectDb();
+  console.log(`Server started at ${port}`);
+});
