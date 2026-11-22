@@ -26,7 +26,7 @@ import { io } from 'socket.io-client'
 import { setSocket } from './redux/userSlice'
 
 
-export const  serverUrl="http://localhost:3200"
+export const serverUrl = import.meta.env.VITE_API_URL;
 const App = () => {
   useGetCurrentUser()
   useGetCity()
