@@ -70,7 +70,7 @@ export const signIn = async (req, resp) => {
 
 
         const token = await genToken(user._id)
-        resp.cookie("token", token, {
+        res.cookie("token", token, {
             secure: false,
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000,
