@@ -24,7 +24,8 @@ const port = process.env.PORT || 5000;
 // Allowed frontend URLs
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://food-del-2nqd.vercel.app"
+  "https://food-del-2nqd.vercel.app",
+  "https://food-del-2nqd-git-main-priyank8449s-projects.vercel.app"
 ];
 
 // Socket.IO configuration
